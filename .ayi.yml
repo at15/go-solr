@@ -1,0 +1,7 @@
+dep-install:
+  - glide install
+test:
+  - go test -short -v -cover ./pkg/...
+scripts:
+  fmt:
+    - gofmt -d -l -w ./pkg
