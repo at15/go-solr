@@ -2,6 +2,14 @@
 
 Solr client in golang
 
+## Features
+
+None of them are implemented ( ;w; )
+
+- Manage schema via REST API
+- Convert to struct (? how to say that ....)
+- Solr Cloud
+
 ## Roadmap
 
 - [ ] generate schema xml based on golang struct (w/o?) annotation

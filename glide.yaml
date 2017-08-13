@@ -5,7 +5,7 @@ import:
   version: 8c6fa02d2225de0f9bdcb7ca912556f68d172d8c
 - package: github.com/dyweb/gommon
   vcs: git
-  version: 2612ac533fe79fbcfa1074baebaea967348e15e6
+  version: 82c5398e6809f6c4c2f8b1d7328c2340d1b796d4
 testImport:
 - package: github.com/stretchr/testify
   vcs: git
