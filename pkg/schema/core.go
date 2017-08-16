@@ -9,8 +9,13 @@ const (
 	DefaultConfigSet = "data_driven_schema_configs"
 )
 
-type CreateCoreRequest struct {
+type Core struct {
 	Name        string `json:"name"`
 	InstanceDir string `json:"instanceDir"`
 	ConfigSet   string `json:"configSet"`
+}
+
+// TODO: do we really need this request wrapper?
+type CreateCoreRequest struct {
+	Core Core
 }

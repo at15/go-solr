@@ -10,7 +10,7 @@ None of them are implemented ( ;w; )
  - [ ] v2 API? https://cwiki.apache.org/confluence/display/solr/v2+API
  - https://lucene.apache.org/solr/guide/6_6/v2-api.html seems to solr cloud mode only ....
 - Convert to struct (? how to say that ....)
-- Solr Cloud
+- Solr w/ & w/o Cloud
 
 ## Roadmap
 
@@ -19,3 +19,9 @@ None of them are implemented ( ;w; )
 - [ ] support schema less 
 - [ ] collect metrics about upstream
 - [ ] client side load balancing
+
+## Alternatives
+
+- https://github.com/sendgrid/go-solr actively maintained
+- https://github.com/vanng822/go-solr last updated 2017
+- https://github.com/rtt/Go-Solr last updated 2015
