@@ -5,15 +5,15 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 
 	"github.com/pkg/errors"
-	"io/ioutil"
 )
 
 type Client struct {
-	baseURL   url.URL
+	baseURL   *url.URL
 	http      *http.Client
 	userAgent string
 }
@@ -22,14 +22,33 @@ type Response struct {
 	*http.Response
 }
 
-func NewClient(c *http.Client) *Client {
-	if c == nil {
-		c = http.DefaultClient
+type ClientOption func(*Client) error
+
+func BaseURL(addr string) ClientOption {
+	return func(c *Client) error {
+		var err error
+		c.baseURL, err = url.Parse(addr)
+		if err != nil {
+			return errors.Wrapf(err, "invalid base url %s", addr)
+		}
+		return nil
 	}
-	return &Client{
-		http:      c,
+}
+
+func NewClient(client *http.Client, options ...ClientOption) (*Client, error) {
+	if client == nil {
+		client = http.DefaultClient
+	}
+	c := &Client{
+		http:      client,
 		userAgent: DefaultUserAgent,
 	}
+	for _, opt := range options {
+		if err := opt(c); err != nil {
+			return nil, errors.WithMessage(err, "invalid client option")
+		}
+	}
+	return c, nil
 }
 
 // NewRequest creates a request, resolves relative url to base url, encodes body as json, sets proper request header and parameters (wt=json)
@@ -59,7 +78,7 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 	q := req.URL.Query()
 	q.Set("wt", "json")
 	req.URL.RawQuery = q.Encode()
-	return nil, nil
+	return req, nil
 }
 
 func (c *Client) Get(ctx context.Context, url string, v interface{}) (*Response, error) {

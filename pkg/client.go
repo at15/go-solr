@@ -36,6 +36,7 @@ type SolrClient struct {
 }
 
 func New(config Config) (*SolrClient, error) {
+	var err error
 	// valid addr
 	if config.Addr == "" {
 		config.Addr = DefaultAddr
@@ -44,13 +45,15 @@ func New(config Config) (*SolrClient, error) {
 	if !strings.HasSuffix(config.Addr, "/") {
 		config.Addr += "/"
 	}
-	if _, err := url.Parse(config.Addr); err != nil {
+	if _, err = url.Parse(config.Addr); err != nil {
 		return nil, errors.Wrap(err, "invalid host address in config")
 	}
 	c := &SolrClient{config: config}
 	// TODO: our default behaviour should be create a new transport and set timeout to the http client instead of using
 	// the default transport and client
-	c.client = internal.NewClient(nil)
+	if c.client, err = internal.NewClient(nil, internal.BaseURL(config.Addr)); err != nil {
+		return nil, errors.WithMessage(err, "can't create internal http client wrapper")
+	}
 	c.Admin = admin.New(c.client)
 	// TODO: remove the usage of casting from common service
 	c.common.SetClient(c.client)
@@ -59,11 +62,11 @@ func New(config Config) (*SolrClient, error) {
 	return c, nil
 }
 
-// TODO: check it using http://localhost:8983/solr/admin/info/system?_=1502864003037&wt=json
 // ping can only be used when a core is created https://stackoverflow.com/questions/19248746/configure-health-check-in-solr-4
 func (c *SolrClient) IsUp(ctx context.Context) error {
+	// using http://localhost:8983/solr/admin/info/system?wt=json
 	info, err := c.Admin.SystemInfo(ctx)
-	log.Info(info)
+	log.Debug(info)
 	return err
 }
 
