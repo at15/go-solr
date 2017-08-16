@@ -50,8 +50,10 @@ func New(config Config) (*SolrClient, error) {
 	c := &SolrClient{config: config}
 	// TODO: our default behaviour should be create a new transport and set timeout to the http client instead of using
 	// the default transport and client
-	c.common.SetClient(internal.NewClient(nil))
-	c.Admin = (*admin.Service)(&c.common)
+	c.client = internal.NewClient(nil)
+	c.Admin = admin.New(c.client)
+	// TODO: remove the usage of casting from common service
+	c.common.SetClient(c.client)
 	c.Core = (*core.Service)(&c.common)
 	c.Schema = (*schema.Service)(&c.common)
 	return c, nil
@@ -60,7 +62,8 @@ func New(config Config) (*SolrClient, error) {
 // TODO: check it using http://localhost:8983/solr/admin/info/system?_=1502864003037&wt=json
 // ping can only be used when a core is created https://stackoverflow.com/questions/19248746/configure-health-check-in-solr-4
 func (c *SolrClient) IsUp(ctx context.Context) error {
-	_, err := c.Admin.SystemInfo(ctx)
+	info, err := c.Admin.SystemInfo(ctx)
+	log.Info(info)
 	return err
 }
 

@@ -9,6 +9,7 @@ import (
 	"net/url"
 
 	"github.com/pkg/errors"
+	"io/ioutil"
 )
 
 type Client struct {
@@ -70,7 +71,39 @@ func (c *Client) Get(ctx context.Context, url string, v interface{}) (*Response,
 }
 
 func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Response, error) {
-	return nil, nil
+	req = req.WithContext(ctx)
+	res, err := c.http.Do(req)
+	if err != nil {
+		// return context error
+		select {
+		case <-ctx.Done():
+			return nil, errors.Wrap(ctx.Err(), "context canceled")
+		default:
+		}
+		return nil, errors.Wrap(err, "http client error")
+	}
+	// TODO: is this still needed in newer version of golang,
+	// json decoder does not drain the body so tls connection can not be reused
+	defer func() {
+		// Drain up to 512 bytes and close the body to let the Transport reuse the connection
+		io.CopyN(ioutil.Discard, res.Body, 512)
+		res.Body.Close()
+	}()
+	if v != nil {
+		if w, ok := v.(io.Writer); ok {
+			io.Copy(w, res.Body)
+		} else {
+			if err := json.NewDecoder(res.Body).Decode(v); err != nil {
+				return nil, errors.Wrap(err, "can't decode json response")
+			}
+
+		}
+	}
+	return newResponse(res), nil
+}
+
+func newResponse(res *http.Response) *Response {
+	return &Response{res}
 }
 
 // TODO: check it using http://localhost:8983/solr/admin/info/system?_=1502864003037&wt=json

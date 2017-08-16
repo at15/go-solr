@@ -13,6 +13,7 @@ const (
 	MediaTypeJSON     = "application/json"
 )
 
+// Deprecated
 type Service struct {
 	client *Client
 }

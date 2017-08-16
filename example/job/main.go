@@ -19,5 +19,7 @@ func main() {
 	if err := solr.IsUp(context.Background()); err != nil {
 		log.Fatalf("Solr is not up %v", err)
 		return
+	} else {
+		log.Println("Solr is up")
 	}
 }
