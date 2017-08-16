@@ -6,8 +6,9 @@ package schema
 // if you're running SolrCloud, you should NOT be using the CoreAdmin API at all. Use the Collections API.
 
 const (
-	DEAFULT_CONFIGSET = "data_driven_schema_configs"
+	DefaultConfigSet = "data_driven_schema_configs"
 )
+
 type CreateCoreRequest struct {
 	Name        string `json:"name"`
 	InstanceDir string `json:"instanceDir"`
