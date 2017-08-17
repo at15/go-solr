@@ -12,12 +12,3 @@ const (
 	HeaderContentType = "Content-Type"
 	MediaTypeJSON     = "application/json"
 )
-
-// Deprecated
-type Service struct {
-	client *Client
-}
-
-func (svc *Service) SetClient(client *Client) {
-	svc.client = client
-}

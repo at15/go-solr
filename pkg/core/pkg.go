@@ -1,3 +1,4 @@
+// Package core contains operations related to Solr Core
 package core
 
 import (
@@ -5,3 +6,7 @@ import (
 )
 
 var log = util.Logger.RegisterPkg()
+
+const (
+	baseURL = "/solr/admin/cores"
+)

@@ -103,6 +103,7 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 	}
 	// TODO: is this still needed in newer version of golang,
 	// json decoder does not drain the body so tls connection can not be reused
+	// originally from https://github.com/google/go-github/pull/317
 	defer func() {
 		// Drain up to 512 bytes and close the body to let the Transport reuse the connection
 		io.CopyN(ioutil.Discard, res.Body, 512)
