@@ -7,6 +7,7 @@
 
 ## Create
 
+- you can use GET, no need to use POST, but both should work, I guess solr doesn't filter http methods
 - [ ] TODO: wrong install dir, config set etc.
 - [ ] TODO: collection, when we start using solr cloud
 

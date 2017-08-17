@@ -57,22 +57,22 @@ type SystemInfoResponse struct {
 		} `json:"jmx"`
 	} `json:"jvm"`
 	System struct {
-		Name                       string  `json:"name"`
-		Arch                       string  `json:"arch"`
-		AvailableProcessors        int     `json:"availableProcessors"`
-		SystemLoadAverage          float64 `json:"systemLoadAverage"`
-		Version                    string  `json:"version"`
-		CommittedVirtualMemorySize int64   `json:"committedVirtualMemorySize"`
-		FreePhysicalMemorySize     int64   `json:"freePhysicalMemorySize"`
-		FreeSwapSpaceSize          int64   `json:"freeSwapSpaceSize"`
-		ProcessCPULoad             float64 `json:"processCpuLoad"`
-		ProcessCPUTime             int64   `json:"processCpuTime"`
-		SystemCPULoad              float64 `json:"systemCpuLoad"`
-		TotalPhysicalMemorySize    int64   `json:"totalPhysicalMemorySize"`
-		TotalSwapSpaceSize         int64   `json:"totalSwapSpaceSize"`
-		MaxFileDescriptorCount     int     `json:"maxFileDescriptorCount"`
-		OpenFileDescriptorCount    int     `json:"openFileDescriptorCount"`
-		Uname                      string  `json:"uname"`
-		Uptime                     string  `json:"uptime"`
+		Name                       string      `json:"name"`
+		Arch                       string      `json:"arch"`
+		AvailableProcessors        int         `json:"availableProcessors"`
+		SystemLoadAverage          float64     `json:"systemLoadAverage"`
+		Version                    string      `json:"version"`
+		CommittedVirtualMemorySize int64       `json:"committedVirtualMemorySize"`
+		FreePhysicalMemorySize     int64       `json:"freePhysicalMemorySize"`
+		FreeSwapSpaceSize          int64       `json:"freeSwapSpaceSize"`
+		ProcessCPULoad             float64     `json:"processCpuLoad"`
+		ProcessCPUTime             int64       `json:"processCpuTime"`
+		SystemCPULoad              interface{} `json:"systemCpuLoad"` // FIXME: on Mac this is "NaN" and golang can't decode it as float64
+		TotalPhysicalMemorySize    int64       `json:"totalPhysicalMemorySize"`
+		TotalSwapSpaceSize         int64       `json:"totalSwapSpaceSize"`
+		MaxFileDescriptorCount     int         `json:"maxFileDescriptorCount"`
+		OpenFileDescriptorCount    int         `json:"openFileDescriptorCount"`
+		Uname                      string      `json:"uname"`
+		Uptime                     string      `json:"uptime"`
 	} `json:"system"`
 }

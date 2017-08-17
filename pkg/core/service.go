@@ -54,6 +54,13 @@ func (svc *Service) Create(ctx context.Context, core Core) error {
 	return nil
 }
 
+// http://localhost:8983/solr/admin/cores?action=STATUS&core=core-name
+// TODO: extra call for getting status of all cores
+// TODO: core status struct
+func (svc *Service) Status() error {
+	return nil
+}
+
 // http:localhost:PORT/solr/admin/cores?action=RENAME&core=old_name&other=new
 func (svc *Service) Rename() error {
 	return nil
