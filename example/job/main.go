@@ -5,6 +5,7 @@ import (
 	"github.com/at15/go-solr/pkg"
 	"log"
 	"context"
+	"github.com/at15/go-solr/pkg/core"
 )
 
 func main() {
@@ -21,5 +22,11 @@ func main() {
 		return
 	} else {
 		log.Println("Solr is up")
+	}
+	if err := solr.DefaultCore.Create(context.Background(), core.NewCore("demo")); err != nil {
+		log.Fatalf("Create core demo failed %v", err)
+		return
+	} else {
+		log.Println("Created core demo ")
 	}
 }

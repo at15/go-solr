@@ -1,4 +1,5 @@
-// Package core contains operations related to Solr Core
+// Package core contains operations related to Solr Core.
+// Official API doc is http://lucene.apache.org/solr/guide/6_6/coreadmin-api.html
 package core
 
 import (
@@ -6,7 +7,3 @@ import (
 )
 
 var log = util.Logger.RegisterPkg()
-
-const (
-	baseURL = "/solr/admin/cores"
-)

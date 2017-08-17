@@ -64,10 +64,10 @@ type SystemInfoResponse struct {
 		Version                    string  `json:"version"`
 		CommittedVirtualMemorySize int64   `json:"committedVirtualMemorySize"`
 		FreePhysicalMemorySize     int64   `json:"freePhysicalMemorySize"`
-		FreeSwapSpaceSize          int     `json:"freeSwapSpaceSize"`
+		FreeSwapSpaceSize          int64   `json:"freeSwapSpaceSize"`
 		ProcessCPULoad             float64 `json:"processCpuLoad"`
 		ProcessCPUTime             int64   `json:"processCpuTime"`
-		SystemCPULoad              string  `json:"systemCpuLoad"`
+		SystemCPULoad              float64 `json:"systemCpuLoad"`
 		TotalPhysicalMemorySize    int64   `json:"totalPhysicalMemorySize"`
 		TotalSwapSpaceSize         int64   `json:"totalSwapSpaceSize"`
 		MaxFileDescriptorCount     int     `json:"maxFileDescriptorCount"`

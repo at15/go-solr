@@ -5,7 +5,3 @@ import (
 )
 
 var log = util.Logger.RegisterPkg()
-
-const (
-	baseURL = "/solr/admin"
-)

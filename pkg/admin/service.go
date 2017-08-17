@@ -5,6 +5,10 @@ import (
 	"github.com/at15/go-solr/pkg/internal"
 )
 
+const (
+	baseURL = "/solr/admin"
+)
+
 type Service struct {
 	client *internal.Client
 }

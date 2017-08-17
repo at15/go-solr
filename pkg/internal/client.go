@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"fmt"
 	"github.com/pkg/errors"
 )
 
@@ -20,6 +21,24 @@ type Client struct {
 
 type Response struct {
 	*http.Response
+}
+
+type SolrErrorResponse struct {
+	ResponseHeader struct {
+		Status int `json:"status"`
+		QTime  int `json:"QTime"`
+	} `json:"responseHeader"`
+	// NOTE: we can't use Error because we need the method with same name to met error interface
+	Err struct {
+		Metadata []string `json:"metadata"`
+		Msg      string   `json:"msg"`
+		Trace    string   `json:"trace"`
+		Code     int      `json:"code"`
+	} `json:"error"`
+}
+
+func (e *SolrErrorResponse) Error() string {
+	return fmt.Sprintf("solr: %d: %s", e.ResponseHeader.Status, e.Err.Msg)
 }
 
 type ClientOption func(*Client) error
@@ -109,6 +128,13 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 		io.CopyN(ioutil.Discard, res.Body, 512)
 		res.Body.Close()
 	}()
+
+	// all the non 2XX response are treated as error
+	// TODO: will there be 304?
+	if err = checkResponse(res); err != nil {
+		return newResponse(res), err
+	}
+
 	if v != nil {
 		if w, ok := v.(io.Writer); ok {
 			io.Copy(w, res.Body)
@@ -119,6 +145,7 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 
 		}
 	}
+	// TODO: so what do we do when v is nil? let user drain the response body by themselves?
 	return newResponse(res), nil
 }
 
@@ -126,9 +153,18 @@ func newResponse(res *http.Response) *Response {
 	return &Response{res}
 }
 
-// TODO: check it using http://localhost:8983/solr/admin/info/system?_=1502864003037&wt=json
-// ping can only be used when a core is created https://stackoverflow.com/questions/19248746/configure-health-check-in-solr-4
-func (c *Client) UseCore(core string) error {
-	// TODO: there must be someway to test if a core exists or not
-	return nil
+func checkResponse(res *http.Response) error {
+	if res.StatusCode >= 200 && res.StatusCode <= 299 {
+		return nil
+	}
+	// TODO: solr seems to have a common error response
+	errResp := &SolrErrorResponse{}
+	b, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return errors.Wrap(err, "can't read body")
+	}
+	if err := json.Unmarshal(b, errResp); err != nil {
+		return errors.Wrap(err, "can't unmarshal to solr error message")
+	}
+	return errResp
 }
