@@ -1,0 +1,17 @@
+version: '2'
+services:
+  solr:
+    image: solr:6.6.0
+    ports:
+      - "8984:8983"
+  golang:
+    image: golang:1.8.3
+    command: make -C /go/src/github.com/at15/go-solr test
+    depends_on:
+      - solr
+    volumes:
+      - "..:/go/src/github.com/at15/go-solr:rw"
+    links:
+      - solr
+    environment:
+      - GO_SOLR_ADDR=http://solr:8983
