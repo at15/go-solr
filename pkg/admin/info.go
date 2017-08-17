@@ -2,8 +2,9 @@ package admin
 
 import "time"
 
-// SystemInfoResponse is returned from /solr/admin/info/system?wt=json
+// SystemInfoResponse is system info returned from /solr/admin/info/system?wt=json
 // it is semi auto generated from json using https://mholt.github.io/json-to-go/
+// NOTE: we use interface{} for systemCpuLoad because it is "NaN" on Mac, and can't be decoded as float64
 type SystemInfoResponse struct {
 	ResponseHeader struct {
 		Status int `json:"status"`

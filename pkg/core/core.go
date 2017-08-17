@@ -1,5 +1,7 @@
 package core
 
+import "time"
+
 // https://cwiki.apache.org/confluence/display/solr/CoreAdmin+API
 // NOTE: must specify configSet
 // if you're running SolrCloud, you should NOT be using the CoreAdmin API at all. Use the Collections API.
@@ -8,7 +10,6 @@ const (
 	DefaultConfigSet = "data_driven_schema_configs"
 )
 
-// TODO: move this to the core package
 type Core struct {
 	Name        string `json:"name"`
 	InstanceDir string `json:"instanceDir"`
@@ -22,4 +23,45 @@ func NewCore(name string) Core {
 		InstanceDir: name,
 		ConfigSet:   DefaultConfigSet,
 	}
+}
+
+// TODO: NewCoreFromStatus
+
+// StatusResponse is core status (with index) returned from /solr/admin/cores?action=STATUS&wt=json&core=demo
+type StatusResponse struct {
+	ResponseHeader struct {
+		Status int `json:"status"`
+		QTime  int `json:"QTime"`
+	} `json:"responseHeader"`
+	InitFailures interface{}        `json:"initFailures"`
+	Status       map[string]*Status `json:"status"`
+}
+
+// Status is core status returned from /solr/admin/cores?action=STATUS&wt=json&core=demo
+// it is generated using https://mholt.github.io/json-to-go/
+type Status struct {
+	Name        string    `json:"name"`
+	InstanceDir string    `json:"instanceDir"`
+	DataDir     string    `json:"dataDir"`
+	Config      string    `json:"config"`
+	Schema      string    `json:"schema"`
+	StartTime   time.Time `json:"startTime"`
+	Uptime      int       `json:"uptime"`
+	Index       struct {
+		NumDocs                 int    `json:"numDocs"`
+		MaxDoc                  int    `json:"maxDoc"`
+		DeletedDocs             int    `json:"deletedDocs"`
+		IndexHeapUsageBytes     int    `json:"indexHeapUsageBytes"`
+		Version                 int    `json:"version"`
+		SegmentCount            int    `json:"segmentCount"`
+		Current                 bool   `json:"current"`
+		HasDeletions            bool   `json:"hasDeletions"`
+		Directory               string `json:"directory"`
+		SegmentsFile            string `json:"segmentsFile"`
+		SegmentsFileSizeInBytes int    `json:"segmentsFileSizeInBytes"`
+		UserData                struct {
+		} `json:"userData"`
+		SizeInBytes int    `json:"sizeInBytes"`
+		Size        string `json:"size"`
+	} `json:"index"`
 }

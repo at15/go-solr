@@ -28,10 +28,17 @@ func main() {
 	} else {
 		log.Println("Solr is up")
 	}
-	if err := solr.DefaultCore.Create(context.Background(), core.NewCore("demo")); err != nil {
+	if err := solr.DefaultCore.CreateIfNotExists(context.Background(), core.NewCore("demo")); err != nil {
 		log.Fatalf("Create core demo failed %v", err)
 		return
 	} else {
-		log.Println("Created core demo ")
+		log.Println("Created core demo (or it already exists)")
+	}
+	// FIXME: we are not having error because default core is demo and we created demo core in previous lines
+	if status, err := solr.DefaultCore.Status(context.Background(), false); err != nil {
+		log.Fatalf("Check core status failed %v", err)
+		return
+	} else {
+		log.Printf("Got status for core %v\n", status)
 	}
 }
