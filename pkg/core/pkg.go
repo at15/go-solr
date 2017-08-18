@@ -5,6 +5,7 @@ package core
 import (
 	"fmt"
 
+	"github.com/at15/go-solr/pkg/admin"
 	"github.com/at15/go-solr/pkg/common"
 	"github.com/at15/go-solr/pkg/internal"
 	"github.com/at15/go-solr/pkg/util"
@@ -19,15 +20,17 @@ var log = util.Logger.RegisterPkg()
 // - [ ] TODO: solrj pass core in url when create client
 type Service struct {
 	client *internal.Client
+	admin  *admin.Service
 
 	core         common.Core
 	baseURL      string
 	baseAdminURL string
 }
 
-func New(client *internal.Client, core common.Core) *Service {
+func New(client *internal.Client, core common.Core, admin *admin.Service) *Service {
 	s := &Service{
 		client: client,
+		admin:  admin,
 	}
 	s.setCore(core)
 	return s

@@ -63,7 +63,7 @@ func New(config Config) (*SolrClient, error) {
 		return nil, errors.WithMessage(err, "can't create internal http client wrapper")
 	}
 	c.Admin = admin.New(c.client)
-	c.DefaultCore = core.New(c.client, common.NewCore(config.DefaultCore))
+	c.DefaultCore = core.New(c.client, common.NewCore(config.DefaultCore), c.Admin)
 	c.cores[config.DefaultCore] = c.DefaultCore
 	c.Schema = schema.New(c.client)
 	return c, nil

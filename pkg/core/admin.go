@@ -2,9 +2,6 @@ package core
 
 import (
 	"context"
-	"fmt"
-	"net/http"
-
 	"github.com/at15/go-solr/pkg/common"
 	"github.com/pkg/errors"
 )
@@ -29,29 +26,14 @@ func (svc *Service) Ping(ctx context.Context) error {
 }
 
 // http://localhost:8983/solr/admin/cores?action=STATUS&core=core-name
-// FIXME: this is almost identical to admin/core.go, but we can't import admin service
 func (svc *Service) Status(ctx context.Context, indexInfo bool) (*common.CoreStatus, error) {
-	req, err := svc.client.NewRequest(http.MethodGet, globalAdminURL, nil)
+	allStatus, err := svc.admin.CoreStatus(ctx, indexInfo, svc.core.Name)
 	if err != nil {
 		return nil, err
 	}
-	q := req.URL.Query()
-	q.Set(pAction, actionStatus)
-	q.Set(pCore, svc.core.Name)
-	if indexInfo {
-		q.Set(pIndexInfo, "true")
-	} else {
-		q.Set(pIndexInfo, "false")
-	}
-	req.URL.RawQuery = q.Encode()
-	res := &common.CoreStatusResponse{}
-	if _, err := svc.client.Do(ctx, req, res); err != nil {
-		return nil, errors.WithMessage(err, fmt.Sprintf("solr: can't get core status %s", req.URL.String()))
-	}
-	// even though we specify the core, solr still wraps it with a map
-	status, ok := res.Status[svc.core.Name]
+	status, ok := allStatus[svc.core.Name]
 	if !ok {
-		return nil, errors.Errorf("solr: core %s not found %s", svc.core.Name, req.URL.String())
+		return nil, errors.Errorf("solr: core %s not found %s", svc.core.Name)
 	}
 	return status, nil
 }
