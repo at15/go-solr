@@ -2,16 +2,9 @@ package core
 
 import (
 	"context"
+
 	"github.com/at15/go-solr/pkg/common"
 	"github.com/pkg/errors"
-)
-
-const (
-	globalAdminURL = "/solr/admin/cores"
-	pAction        = "action"
-	pCore          = "core"
-	pIndexInfo     = "indexInfo"
-	actionStatus   = "STATUS"
 )
 
 // http://localhost:8983/solr/demo/admin/ping?wt=json

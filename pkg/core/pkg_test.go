@@ -1,13 +1,13 @@
 package core
 
 import (
+	"context"
 	"os"
 	"testing"
 
+	"github.com/at15/go-solr/pkg/admin"
 	"github.com/at15/go-solr/pkg/common"
 	"github.com/at15/go-solr/pkg/internal"
-	"github.com/at15/go-solr/pkg/admin"
-	"context"
 )
 
 var tSvc *Service

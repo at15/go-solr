@@ -62,6 +62,15 @@ type CorePingResponse struct {
 	Status string `json:"status"`
 }
 
+// SchemaResponse is schema information of a single core returned from http://localhost:8983/solr/demo/schema?wt=json
+type SchemaResponse struct {
+	ResponseHeader struct {
+		Status int `json:"status"`
+		QTime  int `json:"QTime"`
+	} `json:"responseHeader"`
+	Schema *Schema `json:"schema"`
+}
+
 // SystemInfoResponse is system info returned from http://localhost:8983/solr/admin/info/system?wt=json
 // NOTE: we use interface{} for systemCpuLoad because it is "NaN" on Mac, and can't be decoded as float64
 type SystemInfoResponse struct {
