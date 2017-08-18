@@ -1,5 +1,6 @@
 # go-solr
 
+[![GoDoc](https://godoc.org/github.com/at15/go-solr?status.svg)](https://godoc.org/github.com/at15/go-solr)
 [![Build Status](https://travis-ci.org/at15/go-solr.svg?branch=master)](https://travis-ci.org/at15/go-solr)
 [![codebeat badge](https://codebeat.co/badges/9c885c87-c100-49ec-8414-d369cd6461f5)](https://codebeat.co/projects/github-com-at15-go-solr-master)
 

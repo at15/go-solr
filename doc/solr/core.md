@@ -30,3 +30,8 @@
 > In SQL databases, you perform commit after updates. Similarly, Solr also requires a commit, and the changes are searchable only after the commit has been triggered on that core
 
 
+## Admin
+
+### Ping
+
+- https://lucene.apache.org/solr/guide/6_6/ping.html

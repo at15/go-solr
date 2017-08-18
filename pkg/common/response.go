@@ -6,7 +6,7 @@ import (
 
 // They are semi auto generated from json using https://mholt.github.io/json-to-go/
 
-// CoreStatusResponse is core status (with index) returned from /solr/admin/cores?action=STATUS&wt=json&core=demo
+// CoreStatusResponse is core status (with index) returned from http://localhost:8983/solr/admin/cores?action=STATUS&wt=json&core=demo
 type CoreStatusResponse struct {
 	ResponseHeader struct {
 		Status int `json:"status"`
@@ -16,8 +16,7 @@ type CoreStatusResponse struct {
 	Status       map[string]*CoreStatus `json:"status"`
 }
 
-// CoreStatus is core status returned from /solr/admin/cores?action=STATUS&wt=json&core=demo
-// it is generated using https://mholt.github.io/json-to-go/
+// CoreStatus is core status returned from http://localhost:8983/solr/admin/cores?action=STATUS&wt=json&core=demo
 type CoreStatus struct {
 	Name        string    `json:"name"`
 	InstanceDir string    `json:"instanceDir"`
@@ -45,7 +44,25 @@ type CoreStatus struct {
 	} `json:"index"`
 }
 
-// SystemInfoResponse is system info returned from /solr/admin/info/system?wt=json
+// CorePingResponse is returned from http://localhost:8983/solr/demo/admin/ping?wt=json
+type CorePingResponse struct {
+	ResponseHeader struct {
+		ZkConnected interface{} `json:"zkConnected"`
+		Status      int         `json:"status"`
+		QTime       int         `json:"QTime"`
+		Params      struct {
+			Q          string `json:"q"`
+			Distrib    string `json:"distrib"`
+			Df         string `json:"df"`
+			Rows       string `json:"rows"`
+			Wt         string `json:"wt"`
+			EchoParams string `json:"echoParams"`
+		} `json:"params"`
+	} `json:"responseHeader"`
+	Status string `json:"status"`
+}
+
+// SystemInfoResponse is system info returned from http://localhost:8983/solr/admin/info/system?wt=json
 // NOTE: we use interface{} for systemCpuLoad because it is "NaN" on Mac, and can't be decoded as float64
 type SystemInfoResponse struct {
 	ResponseHeader struct {

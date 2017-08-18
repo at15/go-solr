@@ -23,6 +23,12 @@ type Response struct {
 	*http.Response
 }
 
+// TODO: raw response body etc.
+type SolrError struct {
+	code     int
+	response *SolrErrorResponse
+}
+
 type SolrErrorResponse struct {
 	ResponseHeader struct {
 		Status int `json:"status"`
@@ -157,6 +163,7 @@ func checkResponse(res *http.Response) error {
 	if res.StatusCode >= 200 && res.StatusCode <= 299 {
 		return nil
 	}
+	// TODO: handle 404, solr return html page instead of json for route without match
 	// TODO: solr seems to have a common error response
 	errResp := &SolrErrorResponse{}
 	b, err := ioutil.ReadAll(res.Body)
