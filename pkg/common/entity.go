@@ -1,8 +1,14 @@
 package common
 
+import "encoding/json"
+
 const (
 	DefaultConfigSet = "data_driven_schema_configs"
 )
+
+type Document interface {
+	json.Marshaler
+}
 
 type Core struct {
 	Name        string `json:"name"`

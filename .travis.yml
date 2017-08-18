@@ -16,3 +16,4 @@ install:
 
 script:
   - make docker-test
+  - make install

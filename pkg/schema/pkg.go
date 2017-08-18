@@ -18,6 +18,7 @@ const (
 
 type Service struct {
 	client *internal.Client
+	meta   *common.Schema
 
 	core    common.Core
 	baseURL string
@@ -41,5 +42,7 @@ func (svc *Service) Get(ctx context.Context) (*common.Schema, error) {
 	if _, err := svc.client.Get(ctx, svc.baseURL, res); err != nil {
 		return nil, errors.WithMessage(err, fmt.Sprintf("solr: can't get core %s schema", svc.core.Name))
 	}
+	// cache the schema
+	svc.meta = res.Schema
 	return res.Schema, nil
 }

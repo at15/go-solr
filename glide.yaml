@@ -1,11 +1,11 @@
 package: github.com/at15/go-solr
 import:
-- package: github.com/spf13/cobra
-  vcs: git
-  version: 8c6fa02d2225de0f9bdcb7ca912556f68d172d8c
 - package: github.com/dyweb/gommon
   vcs: git
   version: 82c5398e6809f6c4c2f8b1d7328c2340d1b796d4
+- package: github.com/spf13/cobra
+  vcs: git
+  version: cb731b898346822cc0c225c28550a8a29d93c732
 testImport:
 - package: github.com/stretchr/testify
   vcs: git
