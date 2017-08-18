@@ -19,5 +19,5 @@ func TestService_Status(t *testing.T) {
 
 	status, err := tSvc.Status(context.Background(), false)
 	assert.Nil(err)
-	assert.Equal("demo", status.Name)
+	assert.Equal("democore", status.Name)
 }

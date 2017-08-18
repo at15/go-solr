@@ -7,7 +7,6 @@ import (
 	"github.com/at15/go-solr/pkg/common"
 	"github.com/at15/go-solr/pkg/core"
 	"github.com/at15/go-solr/pkg/internal"
-	"github.com/at15/go-solr/pkg/schema"
 	"github.com/at15/go-solr/pkg/util"
 	"github.com/pkg/errors"
 	"net/url"
@@ -33,7 +32,6 @@ type SolrClient struct {
 
 	Admin       *admin.Service
 	DefaultCore *core.Service
-	Schema      *schema.Service
 	cores       map[string]*core.Service
 }
 
@@ -65,7 +63,6 @@ func New(config Config) (*SolrClient, error) {
 	c.Admin = admin.New(c.client)
 	c.DefaultCore = core.New(c.client, common.NewCore(config.DefaultCore), c.Admin)
 	c.cores[config.DefaultCore] = c.DefaultCore
-	c.Schema = schema.New(c.client)
 	return c, nil
 }
 

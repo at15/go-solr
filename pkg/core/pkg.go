@@ -8,6 +8,8 @@ import (
 	"github.com/at15/go-solr/pkg/admin"
 	"github.com/at15/go-solr/pkg/common"
 	"github.com/at15/go-solr/pkg/internal"
+	"github.com/at15/go-solr/pkg/schema"
+
 	"github.com/at15/go-solr/pkg/util"
 )
 
@@ -21,6 +23,7 @@ var log = util.Logger.RegisterPkg()
 type Service struct {
 	client *internal.Client
 	admin  *admin.Service
+	Schema *schema.Service
 
 	core         common.Core
 	baseURL      string
@@ -28,12 +31,14 @@ type Service struct {
 }
 
 func New(client *internal.Client, core common.Core, admin *admin.Service) *Service {
-	s := &Service{
+	s := schema.New(client, core)
+	svc := &Service{
 		client: client,
 		admin:  admin,
+		Schema: s,
 	}
-	s.setCore(core)
-	return s
+	svc.setCore(core)
+	return svc
 }
 
 func (svc *Service) setCore(core common.Core) {
