@@ -36,8 +36,7 @@ func (svc *Service) Ping() error {
 }
 
 // http://localhost:8983/solr/admin/cores?action=STATUS&core=core-name
-// TODO: extra call for getting status of all cores
-// TODO: move this to admin/core.go
+// FIXME: this is almost identical to admin/core.go, but we can't import admin service
 func (svc *Service) Status(ctx context.Context, indexInfo bool) (*common.CoreStatus, error) {
 	req, err := svc.client.NewRequest(http.MethodGet, baseURL, nil)
 	if err != nil {

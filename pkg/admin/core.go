@@ -57,7 +57,32 @@ func (svc *Service) CreateCoreIfNotExists(ctx context.Context, core common.Core)
 	return err
 }
 
-// http:localhost:PORT/solr/admin/cores?action=RENAME&core=old_name&other=new
+// http://localhost:8983/solr/admin/cores?action=STATUS
+// FIXME: this is almost identical to core/service.go
+func (svc *Service) CoreStatus(ctx context.Context, indexInfo bool, core string) (map[string]*common.CoreStatus, error) {
+	req, err := svc.client.NewRequest(http.MethodGet, coreBaseURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	q := req.URL.Query()
+	q.Set(pAction, actionStatus)
+	if core != "" {
+		q.Set(pCore, core)
+	}
+	if indexInfo {
+		q.Set(pIndexInfo, "true")
+	} else {
+		q.Set(pIndexInfo, "false")
+	}
+	req.URL.RawQuery = q.Encode()
+	res := &common.CoreStatusResponse{}
+	if _, err := svc.client.Do(ctx, req, res); err != nil {
+		return nil, errors.WithMessage(err, fmt.Sprintf("solr: can't get core status %s", req.URL.String()))
+	}
+	return res.Status, nil
+}
+
+// http://localhost:8983/solr/admin/cores?action=RENAME&core=old_name&other=new
 func (svc *Service) RenameCore() error {
 	return nil
 }
