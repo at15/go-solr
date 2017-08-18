@@ -7,3 +7,5 @@ import (
 )
 
 var log = util.Logger.RegisterPkg()
+
+// - [ ] TODO: solrj pass core in url when create client

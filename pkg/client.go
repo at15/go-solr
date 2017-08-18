@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/at15/go-solr/pkg/admin"
+	"github.com/at15/go-solr/pkg/common"
 	"github.com/at15/go-solr/pkg/core"
 	"github.com/at15/go-solr/pkg/internal"
 	"github.com/at15/go-solr/pkg/schema"
@@ -62,7 +63,7 @@ func New(config Config) (*SolrClient, error) {
 		return nil, errors.WithMessage(err, "can't create internal http client wrapper")
 	}
 	c.Admin = admin.New(c.client)
-	c.DefaultCore = core.New(c.client, core.NewCore(config.DefaultCore))
+	c.DefaultCore = core.New(c.client, common.NewCore(config.DefaultCore))
 	c.cores[config.DefaultCore] = c.DefaultCore
 	c.Schema = schema.New(c.client)
 	return c, nil
