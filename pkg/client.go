@@ -9,8 +9,10 @@ import (
 	"github.com/at15/go-solr/pkg/internal"
 	"github.com/at15/go-solr/pkg/util"
 	"github.com/pkg/errors"
+	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 )
 
 var log = util.Logger.RegisterPkg()
@@ -27,6 +29,7 @@ type Config struct {
 }
 
 type SolrClient struct {
+	mu     sync.Mutex
 	config Config
 	client *internal.Client
 
@@ -55,9 +58,10 @@ func New(config Config) (*SolrClient, error) {
 		config: config,
 		cores:  make(map[string]*core.Service),
 	}
-	// TODO: our default behaviour should be create a new transport and set timeout to the http client instead of using
-	// the default transport and client
-	if c.client, err = internal.NewClient(nil, internal.BaseURL(config.Addr)); err != nil {
+	// TODO: let user config transport (i.e. use ss) and client timeout
+	tr := &http.Transport{}
+	h := &http.Client{Transport: tr}
+	if c.client, err = internal.NewClient(h, internal.BaseURL(config.Addr)); err != nil {
 		return nil, errors.WithMessage(err, "can't create internal http client wrapper")
 	}
 	c.Admin = admin.New(c.client)
@@ -74,7 +78,13 @@ func (c *SolrClient) IsUp(ctx context.Context) error {
 	return err
 }
 
-func (c *SolrClient) UseCore(core string) error {
-	// TODO: there must be someway to test if a core exists or not
+func (c *SolrClient) UseCore(coreName string) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.DefaultCore = core.New(c.client, common.NewCore(coreName), c.Admin)
+	c.cores[c.DefaultCore.NameOfCore()] = c.DefaultCore
+
+	// TODO: maybe we should test if this core exists
 	return nil
 }

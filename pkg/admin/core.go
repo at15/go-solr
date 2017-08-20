@@ -13,19 +13,22 @@ import (
 )
 
 const (
-	coreBaseURL  = "/solr/admin/cores"
-	pAction      = "action"
-	pInstanceDir = "instanceDir"
-	pConfigSet   = "configSet"
-	pCore        = "core"
-	pName        = "name"
-	pIndexInfo   = "indexInfo"
-	actionCreate = "CREATE"
-	actionStatus = "STATUS"
+	coreBaseURL        = "/solr/admin/cores"
+	pAction            = "action"
+	pInstanceDir       = "instanceDir"
+	pConfigSet         = "configSet"
+	pCore              = "core"
+	pName              = "name"
+	pIndexInfo         = "indexInfo"
+	pDeleteInstanceDir = "deleteInstanceDir"
+	actionCreate       = "CREATE"
+	actionStatus       = "STATUS"
+	actionUnload       = "UNLOAD"
 )
 
 // http://localhost:8983/solr/admin/cores?action=CREATE&name=films&instanceDir=films&configSet=data_driven_schema_configs
 func (svc *Service) CreateCore(ctx context.Context, core common.Core) error {
+	// NOTE: GET works, though it should be POST
 	req, err := svc.client.NewRequest(http.MethodGet, coreBaseURL, nil)
 	if err != nil {
 		return err
@@ -93,6 +96,18 @@ func (svc *Service) UnloadCore() error {
 
 // http://www.ryanwright.me/cookbook/apachesolr/delete-core
 // http:/localhost:8983/solr/admin/cores?acton=UNLOAD&core=mysolrcore&deleteInstanceDir=true
-func (svc *Service) DeleteCore() error {
+func (svc *Service) DeleteCore(ctx context.Context, core string) error {
+	req, err := svc.client.NewRequest(http.MethodGet, coreBaseURL, nil)
+	if err != nil {
+		return err
+	}
+	q := req.URL.Query()
+	q.Set(pAction, actionUnload)
+	q.Set(pCore, core)
+	q.Set(pDeleteInstanceDir, "true")
+	req.URL.RawQuery = q.Encode()
+	if _, err := svc.client.Do(ctx, req, ioutil.Discard); err != nil {
+		return errors.WithMessage(err, fmt.Sprintf("solr: can't delete core %s", req.URL.String()))
+	}
 	return nil
 }

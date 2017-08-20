@@ -9,6 +9,8 @@ import (
 	"os"
 )
 
+const coreName = "demojob"
+
 func main() {
 	fmt.Println("example for storing job log in solr")
 	fmt.Println("creating solr client")
@@ -28,17 +30,20 @@ func main() {
 	} else {
 		log.Println("Solr is up")
 	}
-	if err := solr.Admin.CreateCoreIfNotExists(context.Background(), common.NewCore("demo")); err != nil {
-		log.Fatalf("Create core demo failed %v", err)
+	if err := solr.Admin.CreateCoreIfNotExists(context.Background(), common.NewCore(coreName)); err != nil {
+		log.Fatalf("Create core %s failed %v", coreName, err)
 		return
 	} else {
-		log.Println("Created core demo (or it already exists)")
+		log.Printf("Created core %s (or it already exists)", coreName)
 	}
-	// FIXME: we are not having error because default core is demo and we created demo core in previous lines
+	if err := solr.UseCore(coreName); err != nil {
+		log.Fatalf("can not use %s as default core %v", coreName, err)
+		return
+	}
 	if status, err := solr.DefaultCore.Status(context.Background(), false); err != nil {
 		log.Fatalf("Check core status failed %v", err)
 		return
 	} else {
-		log.Printf("Got status for core %v\n", status)
+		log.Printf("Got status for core %s %v\n", coreName, status)
 	}
 }

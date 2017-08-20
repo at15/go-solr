@@ -45,3 +45,7 @@ func (svc *Service) setCore(core common.Core) {
 	svc.baseURL = fmt.Sprintf(baseURLTmpl, core.Name)
 	svc.baseAdminURL = svc.baseURL + "admin/"
 }
+
+func (svc *Service) NameOfCore() string {
+	return svc.core.Name
+}
