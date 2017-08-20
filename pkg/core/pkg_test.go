@@ -1,7 +1,6 @@
 package core
 
 import (
-	"context"
 	"os"
 	"testing"
 
@@ -16,12 +15,7 @@ func TestMain(m *testing.M) {
 	log.Info("Setup of core package test")
 	c := internal.MustNewInternalClient()
 	a := admin.New(c)
-	tSvc = New(c, common.NewCore("democore"), a)
-	if err := a.CreateCoreIfNotExists(context.Background(), tSvc.core); err != nil {
-		log.Errorf("can't create core %v", err)
-		os.Exit(1)
-		return
-	}
+	tSvc = New(c, common.NewCore("demo"), a)
 	v := m.Run()
 	log.Info("Tear down of core package test")
 	os.Exit(v)

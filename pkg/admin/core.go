@@ -58,7 +58,6 @@ func (svc *Service) CreateCoreIfNotExists(ctx context.Context, core common.Core)
 }
 
 // http://localhost:8983/solr/admin/cores?action=STATUS
-// FIXME: this is almost identical to core/service.go
 func (svc *Service) CoreStatus(ctx context.Context, indexInfo bool, core string) (map[string]*common.CoreStatus, error) {
 	req, err := svc.client.NewRequest(http.MethodGet, coreBaseURL, nil)
 	if err != nil {

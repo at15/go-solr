@@ -9,7 +9,6 @@ import (
 	"github.com/at15/go-solr/pkg/common"
 	"github.com/at15/go-solr/pkg/internal"
 	"github.com/at15/go-solr/pkg/schema"
-
 	"github.com/at15/go-solr/pkg/util"
 )
 
