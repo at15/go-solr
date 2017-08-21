@@ -1,3 +1,7 @@
+/*
+Package schema provides core schema management and schema generation using reflection.
+Schema related structs (Schema, Field etc.) and filedtype are defined in common package
+*/
 package schema
 
 import (

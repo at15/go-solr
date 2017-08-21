@@ -1,9 +1,10 @@
 package internal
 
 import (
-	asst "github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
+
+	asst "github.com/stretchr/testify/assert"
 )
 
 func TestNewClient(t *testing.T) {
