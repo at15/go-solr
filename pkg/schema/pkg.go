@@ -37,6 +37,7 @@ func (svc *Service) SetCore(core common.Core) {
 	svc.baseURL = fmt.Sprintf(baseURLTmpl, core.Name)
 }
 
+// GET localhost:8983/solr/demo/schema?wt=json
 func (svc *Service) Get(ctx context.Context) (*common.Schema, error) {
 	res := &common.SchemaResponse{}
 	if _, err := svc.client.Get(ctx, svc.baseURL, res); err != nil {

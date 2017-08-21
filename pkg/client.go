@@ -33,6 +33,7 @@ type SolrClient struct {
 	config Config
 	client *internal.Client
 
+	// TODO: make admin private and proxy necessary methods
 	Admin       *admin.Service
 	DefaultCore *core.Service
 	cores       map[string]*core.Service

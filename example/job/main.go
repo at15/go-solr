@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"github.com/at15/go-solr/pkg"
-	"log"
 	"context"
-	"github.com/at15/go-solr/pkg/common"
+	"fmt"
+	"log"
 	"os"
+
+	"github.com/at15/go-solr/pkg"
+	"github.com/at15/go-solr/pkg/common"
 )
 
 const coreName = "demojob"
@@ -27,15 +28,15 @@ func main() {
 	if err := solr.IsUp(context.Background()); err != nil {
 		log.Fatalf("Solr is not up %v", err)
 		return
-	} else {
-		log.Println("Solr is up")
 	}
+	log.Println("Solr is up")
+
 	if err := solr.Admin.CreateCoreIfNotExists(context.Background(), common.NewCore(coreName)); err != nil {
 		log.Fatalf("Create core %s failed %v", coreName, err)
 		return
-	} else {
-		log.Printf("Created core %s (or it already exists)", coreName)
 	}
+	log.Printf("Created core %s (or it already exists)", coreName)
+
 	if err := solr.UseCore(coreName); err != nil {
 		log.Fatalf("can not use %s as default core %v", coreName, err)
 		return
@@ -46,4 +47,9 @@ func main() {
 	} else {
 		log.Printf("Got status for core %s %v\n", coreName, status)
 	}
+	if err := solr.Admin.DeleteCore(context.Background(), coreName); err != nil {
+		log.Fatalf("Delete core %s failed %v", coreName, err)
+		return
+	}
+	log.Println("core deleted, example finished")
 }

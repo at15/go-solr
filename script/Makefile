@@ -1,4 +1,4 @@
-.PHONY: solr install reinstall
+.PHONY: solr install uninstall reinstall
 
 solr:
 	./solr/bin/solr start -f
@@ -6,6 +6,9 @@ solr-v:
 	./solr/bin/solr start -f -v
 install:
 	./local_install.sh
-reinstall:
+	./solr/bin/solr start
+	solrgo core create demo
+	./solr/bin/solr stop
+uninstall:
 	rm -rf solr
-	./local_install.sh
+reinstall: uninstall install

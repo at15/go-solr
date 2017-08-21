@@ -9,6 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	overwrite = false // TODO: create if not exist
+)
+
 var CoreCmd = &cobra.Command{
 	Use:   "core",
 	Short: "Manage Solr core",

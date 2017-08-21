@@ -114,6 +114,14 @@ func (c *Client) Get(ctx context.Context, url string, v interface{}) (*Response,
 	return c.Do(ctx, req, v)
 }
 
+func (c *Client) Post(ctx context.Context, url string, body, v interface{}) (*Response, error) {
+	req, err := c.NewRequest(http.MethodGet, url, body)
+	if err != nil {
+		return nil, err
+	}
+	return c.Do(ctx, req, v)
+}
+
 func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Response, error) {
 	req = req.WithContext(ctx)
 	res, err := c.http.Do(req)

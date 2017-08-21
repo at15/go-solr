@@ -8,19 +8,21 @@ Solr client in golang
 
 ## Features
 
-None of them are implemented ( ;w; )
-
+- Manage core via REST API
 - Manage schema via REST API
- - [ ] v2 API? https://cwiki.apache.org/confluence/display/solr/v2+API
- - https://lucene.apache.org/solr/guide/6_6/v2-api.html seems to solr cloud mode only ....
-- Convert to struct (? how to say that ....)
-- Solr w/ & w/o Cloud
+
+Not implemented
+
+- [ ] v2 API, use with  https://cwiki.apache.org/confluence/display/solr/v2+API
+- [ ] Convert to struct (? how to say that ....)
+- [ ] SolrCloud
 
 ## Roadmap
 
-- [ ] generate schema xml based on golang struct (w/o?) annotation
+- [x] using managed schema
+  - ~~generate schema xml based on golang struct (w/o?) annotation~~
+  - ~~support schema less~~
 - [ ] query using JSON API
-- [ ] support schema less 
 - [ ] collect metrics about upstream
 - [ ] client side load balancing
 

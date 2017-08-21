@@ -6,6 +6,12 @@ const (
 	DefaultConfigSet = "data_driven_schema_configs"
 )
 
+var (
+	// True is for setting *bool, i.e. field.docValues = &True, we use *bool instead of bool to avoid omitempty ignore false value
+	True  = true
+	False = false
+)
+
 type Document interface {
 	json.Marshaler
 }
@@ -36,8 +42,8 @@ type Schema struct {
 }
 
 type FieldType struct {
-	Name          string `json:"name"`
-	Class         string `json:"class"`
+	Name  string `json:"name"`
+	Class string `json:"class"`
 	IndexAnalyzer struct {
 		Tokenizer struct {
 			Class string `json:"class"`
@@ -49,16 +55,16 @@ type FieldType struct {
 			Delimiter string `json:"delimiter"`
 		} `json:"tokenizer"`
 	} `json:"queryAnalyzer,omitempty"`
-	SortMissingLast      bool   `json:"sortMissingLast,omitempty"`
-	MultiValued          bool   `json:"multiValued,omitempty"`
+	SortMissingLast      *bool  `json:"sortMissingLast,omitempty"`
+	MultiValued          *bool  `json:"multiValued,omitempty"`
 	CurrencyConfig       string `json:"currencyConfig,omitempty"`
 	DefaultCurrency      string `json:"defaultCurrency,omitempty"`
 	PrecisionStep        string `json:"precisionStep,omitempty"`
 	PositionIncrementGap string `json:"positionIncrementGap,omitempty"`
-	DocValues            bool   `json:"docValues,omitempty"`
-	Indexed              bool   `json:"indexed,omitempty"`
-	Stored               bool   `json:"stored,omitempty"`
-	Analyzer             struct {
+	DocValues            *bool  `json:"docValues,omitempty"`
+	Indexed              *bool  `json:"indexed,omitempty"`
+	Stored               *bool  `json:"stored,omitempty"`
+	Analyzer struct {
 		Tokenizer struct {
 			Class string `json:"class"`
 		} `json:"tokenizer"`
@@ -76,22 +82,31 @@ type FieldType struct {
 	AutoGeneratePhraseQueries string `json:"autoGeneratePhraseQueries,omitempty"`
 }
 
+// Field uses pointer for bool to create proper payload, we omit not specified flags and let server handle them,
+// so we are less likely to run into inconsistent default flags in go-solr and solr itself
 type Field struct {
 	Name        string `json:"name"`
 	Type        string `json:"type"`
-	DocValues   bool   `json:"docValues,omitempty"`
-	Indexed     bool   `json:"indexed"`
-	Stored      bool   `json:"stored"`
-	MultiValued bool   `json:"multiValued,omitempty"`
-	Required    bool   `json:"required,omitempty"`
+	DocValues   *bool  `json:"docValues,omitempty"`
+	Indexed     *bool  `json:"indexed,omitempty"`
+	Stored      *bool  `json:"stored,omitempty"`
+	MultiValued *bool  `json:"multiValued,omitempty"`
+	Required    *bool  `json:"required,omitempty"`
+}
+
+func NewField(name string, fieldType string) Field {
+	return Field{
+		Name: name,
+		Type: fieldType,
+	}
 }
 
 type DynamicField struct {
 	Name        string `json:"name"`
 	Type        string `json:"type"`
-	Indexed     bool   `json:"indexed,omitempty"`
-	Stored      bool   `json:"stored,omitempty"`
-	MultiValued bool   `json:"multiValued,omitempty"`
+	Indexed     *bool  `json:"indexed,omitempty"`
+	Stored      *bool  `json:"stored,omitempty"`
+	MultiValued *bool  `json:"multiValued,omitempty"`
 }
 
 type CopyField struct {

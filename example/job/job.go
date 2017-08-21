@@ -10,7 +10,7 @@ cd bin
 ./solr create -c jobs
 
 
- */
+*/
 type Job struct {
 	Id        string
 	Namespace string
