@@ -15,10 +15,12 @@ var tSvc *Service
 func TestMain(m *testing.M) {
 	log.Info("Setup of schema package test")
 	log.SetEntryLevel("trace")
+	log.Logger.EnableSourceLine()
 	c := internal.MustNewInternalClient()
 	tSvc = New(c, common.NewCore("demo"))
 	v := m.Run()
 	log.Info("Tear down of schema package test")
+	log.Logger.DisableSourceLine()
 	os.Exit(v)
 }
 

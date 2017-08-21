@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -11,30 +12,48 @@ import (
 
 func TestInferSchema(t *testing.T) {
 	// TODO: refactor to table driven test
-	assert := asst.New(t)
+	// TODO: use MustInferSchema in test
 
-	job := fixture.Job{}
-	// support struct and pointer to struct
-	_, err := InferSchema(job)
-	assert.Nil(err)
-	_, err = InferSchema(&job)
-	assert.Nil(err)
-	_, err = InferSchema("haha")
-	assert.NotNil(err)
+	t.Run("only supports struct and pointer to struct", func(t *testing.T) {
+		assert := asst.New(t)
+		job := fixture.Job{}
+		sma, err := InferSchema(job)
+		assert.Nil(err)
+		sma, err = InferSchema(&job)
+		assert.Nil(err)
+		assert.NotEmpty(sma.Fields)
+		// http://changelog.ca/log/2015/03/09/golang, fancier printing
+		fmt.Printf("%#v\n", sma.Fields[0])
 
-	// error when there is no exported field
-	private := fixture.AllPrivate{}
-	_, err = InferSchema(private)
-	assert.NotNil(err)
+		sma, err = InferSchema("haha")
+		assert.Nil(sma)
+		assert.NotNil(err)
+	})
 
-	// []byte is treated as text_general by default
-	sma, err := InferSchema(fixture.ByteSlice{})
-	assert.Nil(err)
-	assert.Equal(fieldtype.TextGeneral, sma.Fields[0].Type)
+	t.Run("uses json tag for name", func(t *testing.T) {
+		assert := asst.New(t)
+		sma, err := InferSchema(&fixture.JsonTag{})
+		assert.Nil(err)
+		assert.Equal("foo", sma.Fields[0].Name)
+	})
 
+	t.Run("returns error when no exported field found", func(t *testing.T) {
+		assert := asst.New(t)
+		// error when there is no exported field
+		private := fixture.AllPrivate{}
+		_, err := InferSchema(private)
+		assert.NotNil(err)
+	})
+
+	t.Run("use text_general for []byte by default", func(t *testing.T) {
+		assert := asst.New(t)
+		sma, err := InferSchema(fixture.ByteSlice{})
+		assert.Nil(err)
+		assert.Equal(fieldtype.TextGeneral, sma.Fields[0].Type)
+	})
 }
 
-func TestStd_Time(t *testing.T) {
+func TestStd_Types(t *testing.T) {
 	tp := reflect.TypeOf(fixture.ByteSlice{})
 	f := tp.Field(0)
 	t.Log(typeOfTime.Kind()) // struct

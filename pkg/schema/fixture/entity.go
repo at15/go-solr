@@ -17,6 +17,10 @@ type ByteSlice struct {
 	Foo []byte `solr:"bar"`
 }
 
+type JsonTag struct {
+	Foo string `json:"foo"`
+}
+
 type AllPrivate struct {
 	h1 string
 	h2 string

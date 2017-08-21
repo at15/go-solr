@@ -2,15 +2,17 @@ package schema
 
 import (
 	"reflect"
+	"strings"
+	"time"
 
 	"github.com/at15/go-solr/pkg/common"
 	"github.com/at15/go-solr/pkg/common/fieldtype"
 	"github.com/pkg/errors"
-	"time"
 )
 
 const (
-	TagName = "solr"
+	TagName     = "solr"
+	jsonTagName = "json"
 )
 
 var (
@@ -18,7 +20,15 @@ var (
 	typeOfTime      = reflect.TypeOf(time.Time{})
 )
 
-// InferSchema based on struct definition and field tag, only Schema.Fields is generated
+func MustInferSchema(st interface{}) *common.Schema {
+	s, err := InferSchema(st)
+	if err != nil {
+		log.Panic(err)
+	}
+	return s
+}
+
+// InferSchema generates schema based on struct definition and field tag, only Schema.Fields is generated for managed schema
 // https://github.com/at15/go-solr/issues/11
 func InferSchema(st interface{}) (*common.Schema, error) {
 	t := reflect.TypeOf(st)
@@ -38,8 +48,9 @@ func InferSchema(st interface{}) (*common.Schema, error) {
 			log.Tracef("ignore unexported field %s", field.Name)
 			continue
 		}
-		if field.Tag.Get(TagName) == "-" {
-			log.Tracef("ignore field %s", field.Name)
+		// ignore the field if it is ignored by either json tag or own tag
+		if field.Tag.Get(jsonTagName) == "-" || field.Tag.Get(TagName) == "-" {
+			log.Tracef("ignore field %s because - is in tag", field.Name)
 			continue
 		}
 		hasExportedField = true
@@ -58,8 +69,9 @@ func InferSchema(st interface{}) (*common.Schema, error) {
 func inferFieldSchema(field reflect.StructField) (*common.Field, error) {
 	//log.Tracef("infer field %s", field.Name)
 	// TODO: do we need to support pointer
+	// TODO: should use json name if provided
 	fs := &common.Field{Name: field.Name, Type: ""}
-	addFieldSchemaFlags(fs, field.Tag)
+	applyTags(fs, field.Tag)
 	switch field.Type {
 	case typeOfTime:
 		fs.Type = fieldtype.Date // TODO: default to trie date?
@@ -84,6 +96,30 @@ func inferFieldSchema(field reflect.StructField) (*common.Field, error) {
 	return fs, nil
 }
 
-func addFieldSchemaFlags(f *common.Field, tag reflect.StructTag) {
+func applyTags(f *common.Field, tag reflect.StructTag) {
 	log.Tracef("tag value %s", tag.Get(TagName))
+	//log.Tracef("all tags %v", tag)
+	ApplyJSONTag(f, tag.Get(jsonTagName))
+	// our own tag overrides json tag
+}
+
+/*
+ApplyJSONTag uses json tag to set Name, following are list of json tag values we supported base on https://godoc.org/encoding/json
+	Field int `json:"myName"`
+	Field int `json:"myName,omitempty"`
+However, we don't support the following:
+	Field int `json:"-"`
+	Field int `json:"-,"`
+	Int64String int64 `json:",string"`
+*/
+func ApplyJSONTag(f *common.Field, tag string) {
+	//log.Tracef("json tag %s", tag)
+	values := strings.Split(tag, ",")
+	//log.Tracef("len is %d", len(values))
+	if len(values) == 0 {
+		return
+	}
+	if len(values) > 0 && values[0] != "-" {
+		f.Name = values[0]
+	}
 }
