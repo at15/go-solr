@@ -42,8 +42,8 @@ type Schema struct {
 }
 
 type FieldType struct {
-	Name  string `json:"name"`
-	Class string `json:"class"`
+	Name          string `json:"name"`
+	Class         string `json:"class"`
 	IndexAnalyzer struct {
 		Tokenizer struct {
 			Class string `json:"class"`
@@ -64,7 +64,7 @@ type FieldType struct {
 	DocValues            *bool  `json:"docValues,omitempty"`
 	Indexed              *bool  `json:"indexed,omitempty"`
 	Stored               *bool  `json:"stored,omitempty"`
-	Analyzer struct {
+	Analyzer             struct {
 		Tokenizer struct {
 			Class string `json:"class"`
 		} `json:"tokenizer"`

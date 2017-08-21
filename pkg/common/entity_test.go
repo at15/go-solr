@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"encoding/json"
-	asst "github.com/stretchr/testify/assert"
 	"github.com/at15/go-solr/pkg/common/fieldtype"
+	asst "github.com/stretchr/testify/assert"
 )
 
 func TestNewField(t *testing.T) {

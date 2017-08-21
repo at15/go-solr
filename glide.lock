@@ -1,5 +1,5 @@
-hash: c043dad7add2e440cddb5d57679d14ee7f171920b2af098b4a3a3184ff09414d
-updated: 2017-08-18T16:57:26.452906492-07:00
+hash: 14d90c6122516d566e54c2379c27bc2e25a1ba6fa49f249b1afaba7c21707565
+updated: 2017-08-21T09:16:27.445894131-07:00
 imports:
 - name: github.com/dyweb/gommon
   version: 82c5398e6809f6c4c2f8b1d7328c2340d1b796d4
@@ -11,8 +11,9 @@ imports:
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/pkg/errors
   version: 645ef00459ed84a119197bfb8d8205042c6df63d
+  vcs: git
 - name: github.com/spf13/cobra
-  version: cb731b898346822cc0c225c28550a8a29d93c732
+  version: 4a7b7e65864c064d48dce82efbbfed2bdc0bf2aa
   vcs: git
 - name: github.com/spf13/pflag
   version: e57e3eeb33f795204c1ca35f56c44f83227c6e66

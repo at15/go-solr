@@ -83,15 +83,20 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 		return nil, errors.Wrap(err, "invalid relative url")
 	}
 	u := c.baseURL.ResolveReference(rel)
-	var buf io.ReadWriter
+	var encodedBody io.Reader = nil
 	if body != nil {
-		buf = new(bytes.Buffer)
-		err := json.NewEncoder(buf).Encode(body)
-		if err != nil {
-			return nil, errors.Wrap(err, "can't encode body to json")
+		if r, ok := body.(io.Reader); ok {
+			encodedBody = r
+		} else {
+			buf := new(bytes.Buffer)
+			err := json.NewEncoder(buf).Encode(body)
+			if err != nil {
+				return nil, errors.Wrap(err, "can't encode body to json")
+			}
+			encodedBody = buf
 		}
 	}
-	req, err := http.NewRequest(method, u.String(), buf)
+	req, err := http.NewRequest(method, u.String(), encodedBody)
 	if err != nil {
 		return nil, errors.Wrap(err, "can't create http.Request")
 	}

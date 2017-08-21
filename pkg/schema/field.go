@@ -9,14 +9,14 @@ import (
 	"github.com/pkg/errors"
 )
 
-const (
-	opAddField    = "add-field"
-	opDeleteField = "delete-field"
-)
+type FieldRequest struct {
+	AddField    []common.Field      `json:"add-field,omitempty"`
+	DeleteField []map[string]string `json:"delete-field,omitempty"`
+}
 
 func (svc *Service) AddField(ctx context.Context, field common.Field) error {
-	p := make(map[string]common.Field)
-	p[opAddField] = field
+	p := FieldRequest{}
+	p.AddField = append(p.AddField, field)
 	if _, err := svc.client.Post(ctx, svc.baseURL, p, ioutil.Discard); err != nil {
 		return errors.WithMessage(err, fmt.Sprintf("can't create field %s", field.Name))
 	}
@@ -25,8 +25,8 @@ func (svc *Service) AddField(ctx context.Context, field common.Field) error {
 }
 
 func (svc *Service) DeleteField(ctx context.Context, name string) error {
-	p := make(map[string]map[string]string)
-	p[opDeleteField] = map[string]string{"name": name}
+	p := FieldRequest{}
+	p.DeleteField = append(p.DeleteField, map[string]string{"name": name})
 	if _, err := svc.client.Post(ctx, svc.baseURL, p, ioutil.Discard); err != nil {
 		return errors.WithMessage(err, fmt.Sprintf("can't delete field %s", name))
 	}

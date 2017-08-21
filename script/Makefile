@@ -1,4 +1,4 @@
-.PHONY: solr install uninstall reinstall
+.PHONY: solr install uninstall reinstall stop
 
 solr:
 	./solr/bin/solr start -f
@@ -12,3 +12,5 @@ install:
 uninstall:
 	rm -rf solr
 reinstall: uninstall install
+stop:
+	./solr/bin/solr stop
