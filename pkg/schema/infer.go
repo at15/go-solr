@@ -49,6 +49,8 @@ func InferSchema(st interface{}) (*common.Schema, error) {
 			continue
 		}
 		// ignore the field if it is ignored by either json tag or own tag
+		// TODO: we need to set type for filed that is not ignored by json by ignored by solr to ignored,
+		// otherwise solr seems to be automatically create field based on input document in managed schema
 		if field.Tag.Get(jsonTagName) == "-" || field.Tag.Get(TagName) == "-" {
 			log.Tracef("ignore field %s because - is in tag", field.Name)
 			continue
@@ -74,24 +76,28 @@ func inferFieldSchema(field reflect.StructField) (*common.Field, error) {
 	if err := applyTags(fs, field.Tag); err != nil {
 		return nil, err
 	}
-	switch field.Type {
-	case typeOfTime:
-		fs.Type = fieldtype.Date // TODO: default to trie date?
-	case typeOfByteSlice:
-		fs.Type = fieldtype.TextGeneral // TODO: we should document that we treat bytes slice as text general instead of binary by default
-	}
-	// TODO: handle slice (array)
-	switch field.Type.Kind() {
-	case reflect.Struct:
-		if fs.Type == "" {
-			return nil, errors.Errorf("nested document is not supported by go-solr, field %s is struct", field.Name)
+	// only infer the type when user didn't explicit specify it
+	if fs.Type == "" {
+		switch field.Type {
+		case typeOfTime:
+			fs.Type = fieldtype.Date // TODO: default to trie date?
+		case typeOfByteSlice:
+			fs.Type = fieldtype.TextGeneral // TODO: we should document that we treat bytes slice as text general instead of binary by default
 		}
-		// user provided type in tag, or it's builtin type like time handled in previous switch statement
-	case reflect.Bool:
-		fs.Type = fieldtype.Boolean
-	case reflect.String:
-		fs.Type = fieldtype.TextGeneral
+		// TODO: handle slice (array)
+		switch field.Type.Kind() {
+		case reflect.Struct:
+			if fs.Type == "" {
+				return nil, errors.Errorf("nested document is not supported by go-solr, field %s is struct", field.Name)
+			}
+			// user provided type in tag, or it's builtin type like time handled in previous switch statement
+		case reflect.Bool:
+			fs.Type = fieldtype.Boolean
+		case reflect.String:
+			fs.Type = fieldtype.TextGeneral
+		}
 	}
+	// no match
 	if fs.Type == "" {
 		return nil, errors.Errorf("unsupported field type %s", field.Type.Kind())
 	}

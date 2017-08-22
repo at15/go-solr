@@ -177,7 +177,7 @@ func checkResponse(res *http.Response) error {
 		return nil
 	}
 	// TODO: handle 404, solr return html page instead of json for route without match
-	// TODO: solr seems to have a common error response
+	// TODO: solr seems to have a common error response, Update: for schema API, it has its own error format
 	errResp := &SolrErrorResponse{}
 	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {

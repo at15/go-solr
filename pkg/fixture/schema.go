@@ -1,14 +1,15 @@
 /*
-Package fixture provides struct definitions for testing InferSchema in schema package
+Package fixture provides struct definition and fake data generation
 */
 package fixture
 
 import "time"
 
-// TODO: move some test like tag etc. out to ApplyTag
+// TODO: can json & solr handle time.Duration
 type Job struct {
-	Name      string    `json:"name" solr:"name2"`
+	Name      string    `json:"name" solr:"name"`
 	StartTime time.Time `json:"startTime"`
+	EndTime   time.Time `json:"endTime"`
 	Day       bool      `json:"day"`
 	IgnoreMe  string    `json:"ignore_me" solr:"-"`
 	hidden    string

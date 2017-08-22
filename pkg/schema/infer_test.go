@@ -7,7 +7,7 @@ import (
 
 	"github.com/at15/go-solr/pkg/common"
 	"github.com/at15/go-solr/pkg/common/fieldtype"
-	"github.com/at15/go-solr/pkg/schema/fixture"
+	"github.com/at15/go-solr/pkg/fixture"
 	asst "github.com/stretchr/testify/assert"
 )
 
@@ -36,6 +36,20 @@ func TestInferSchema(t *testing.T) {
 		sma, err := InferSchema(&fixture.JsonTag{})
 		assert.Nil(err)
 		assert.Equal("foo", sma.Fields[0].Name)
+	})
+
+	t.Run("supports solr tag", func(t *testing.T) {
+		assert := asst.New(t)
+		sma, err := InferSchema(&fixture.SolrTag{})
+		assert.Nil(err)
+		f := sma.Fields[0]
+		assert.Equal("foo", f.Name)
+		assert.Equal("string", f.Type)
+		assert.Equal(true, *f.DocValues)
+		assert.Equal(false, *f.Indexed)
+		assert.Equal(true, *f.Stored)
+		assert.Equal(false, *f.MultiValued)
+		assert.Equal(true, *f.Required)
 	})
 
 	t.Run("returns error when no exported field found", func(t *testing.T) {
