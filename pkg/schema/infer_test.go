@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/at15/go-solr/pkg/common"
 	"github.com/at15/go-solr/pkg/common/fieldtype"
 	"github.com/at15/go-solr/pkg/schema/fixture"
 	asst "github.com/stretchr/testify/assert"
@@ -51,6 +52,31 @@ func TestInferSchema(t *testing.T) {
 		assert.Nil(err)
 		assert.Equal(fieldtype.TextGeneral, sma.Fields[0].Type)
 	})
+}
+
+func TestApplyTag(t *testing.T) {
+	t.Run("supports all attributes of Field", func(t *testing.T) {
+		assert := asst.New(t)
+		f := &common.Field{Name: "haha"}
+		ApplyTag(f, `,type=string,docValues=true,indexed=false,stored=true,multiValued=false,required=true`)
+		assert.Equal("haha", f.Name)
+		assert.Equal("string", f.Type)
+		assert.Equal(true, *f.DocValues)
+		assert.Equal(false, *f.Indexed)
+		assert.Equal(true, *f.Stored)
+		assert.Equal(false, *f.MultiValued)
+		assert.Equal(true, *f.Required)
+	})
+
+	t.Run("detects invalid tag", func(t *testing.T) {
+		assert := asst.New(t)
+		f := &common.Field{Name: "haha"}
+		err := ApplyTag(f, `,type~string`)
+		assert.NotNil(err)
+		err = ApplyTag(f, `,ttype=string`)
+		assert.NotNil(err)
+	})
+
 }
 
 func TestStd_Types(t *testing.T) {

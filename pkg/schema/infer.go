@@ -71,7 +71,9 @@ func inferFieldSchema(field reflect.StructField) (*common.Field, error) {
 	// TODO: do we need to support pointer
 	// TODO: should use json name if provided
 	fs := &common.Field{Name: field.Name, Type: ""}
-	applyTags(fs, field.Tag)
+	if err := applyTags(fs, field.Tag); err != nil {
+		return nil, err
+	}
 	switch field.Type {
 	case typeOfTime:
 		fs.Type = fieldtype.Date // TODO: default to trie date?
@@ -96,11 +98,61 @@ func inferFieldSchema(field reflect.StructField) (*common.Field, error) {
 	return fs, nil
 }
 
-func applyTags(f *common.Field, tag reflect.StructTag) {
-	log.Tracef("tag value %s", tag.Get(TagName))
+func applyTags(f *common.Field, tag reflect.StructTag) error {
 	//log.Tracef("all tags %v", tag)
 	ApplyJSONTag(f, tag.Get(jsonTagName))
 	// our own tag overrides json tag
+	return ApplyTag(f, tag.Get(TagName))
+}
+
+/*
+ApplyTag uses solr tag to set Name, Type and all the other attributes of a Field
+
+	Foo	string `json:"foo" solr:",type=string,docValues=true,indexed=false,stored=true,multiValued=false,required=true"`
+*/
+func ApplyTag(f *common.Field, tag string) error {
+	//log.Tracef("tag value %s", tag)
+	values := strings.Split(tag, ",")
+	if len(values) == 0 {
+		return nil
+	}
+	if values[0] != "" && values[0] != "-" {
+		f.Name = values[0]
+	}
+	for i := 1; i < len(values); i++ {
+		kv := strings.Split(values[i], "=")
+		if len(kv) != 2 {
+			return errors.Errorf("invalid tag %s", values[i])
+		}
+		k := kv[0]
+		v := kv[1]
+		switch strings.ToLower(k) {
+		case "type":
+			// TODO: valid if this is a valid type in managed schema
+			f.Type = kv[1]
+		case "docvalues":
+			f.DocValues = str2bool(v)
+		case "indexed":
+			f.Indexed = str2bool(v)
+		case "stored":
+			f.Stored = str2bool(v)
+		case "multivalued":
+			f.MultiValued = str2bool(v)
+		case "required":
+			f.Required = str2bool(v)
+		default:
+			return errors.Errorf("unknown key %s in tag %s", k, kv)
+		}
+	}
+	return nil
+}
+
+func str2bool(s string) *bool {
+	b := false
+	if strings.HasPrefix(s, "t") {
+		b = true
+	}
+	return &b
 }
 
 /*
@@ -111,6 +163,7 @@ However, we don't support the following:
 	Field int `json:"-"`
 	Field int `json:"-,"`
 	Int64String int64 `json:",string"`
+TODO: set required = false if omitempty
 */
 func ApplyJSONTag(f *common.Field, tag string) {
 	//log.Tracef("json tag %s", tag)
@@ -119,7 +172,7 @@ func ApplyJSONTag(f *common.Field, tag string) {
 	if len(values) == 0 {
 		return
 	}
-	if len(values) > 0 && values[0] != "-" {
+	if values[0] != "" && values[0] != "-" {
 		f.Name = values[0]
 	}
 }

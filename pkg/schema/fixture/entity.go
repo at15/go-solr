@@ -5,8 +5,9 @@ package fixture
 
 import "time"
 
+// TODO: move some test like tag etc. out to ApplyTag
 type Job struct {
-	Name      string    `json:"name" solr:"foo"`
+	Name      string    `json:"name" solr:"name2"`
 	StartTime time.Time `json:"startTime"`
 	Day       bool      `json:"day"`
 	IgnoreMe  string    `json:"ignore_me" solr:"-"`
@@ -19,6 +20,10 @@ type ByteSlice struct {
 
 type JsonTag struct {
 	Foo string `json:"foo"`
+}
+
+type SolrTag struct {
+	Foo string `json:"foo" solr:",type=string,docValues=true,indexed=false,stored=true,multiValued=false,required=true"`
 }
 
 type AllPrivate struct {
