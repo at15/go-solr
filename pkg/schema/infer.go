@@ -100,6 +100,8 @@ func inferFieldSchema(field reflect.StructField) (*common.Field, error) {
 			fs.Type = fieldtype.TextGeneral
 		}
 	}
+	// TODO: handle slice
+	fs.MultiValued = &common.False
 	// no match
 	if fs.Type == "" {
 		return nil, errors.Errorf("unsupported field type %s", field.Type.Kind())

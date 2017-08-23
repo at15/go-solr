@@ -3,7 +3,10 @@ Package fixture provides struct definition and fake data generation
 */
 package fixture
 
-import "time"
+import (
+	"time"
+	"github.com/at15/go-solr/pkg/common"
+)
 
 type JobError struct {
 	Code int
@@ -37,3 +40,5 @@ type SolrTag struct {
 type AllPrivate struct {
 	h1 string
 }
+
+var JobFieldsSchema = []common.Field{common.Field{Name: "request_uuid", Type: "text_general", DocValues: (*bool)(nil), Indexed: (*bool)(nil), Stored: (*bool)(nil), MultiValued: (*bool)(nil), Required: (*bool)(nil)}, common.Field{Name: "namespace", Type: "text_general", DocValues: (*bool)(nil), Indexed: (*bool)(nil), Stored: (*bool)(nil), MultiValued: (*bool)(nil), Required: (*bool)(nil)}, common.Field{Name: "pool", Type: "text_general", DocValues: (*bool)(nil), Indexed: (*bool)(nil), Stored: (*bool)(nil), MultiValued: (*bool)(nil), Required: (*bool)(nil)}, common.Field{Name: "submittedby", Type: "text_general", DocValues: (*bool)(nil), Indexed: (*bool)(nil), Stored: (*bool)(nil), MultiValued: (*bool)(nil), Required: (*bool)(nil)}, common.Field{Name: "created", Type: "date", DocValues: (*bool)(nil), Indexed: (*bool)(nil), Stored: (*bool)(nil), MultiValued: (*bool)(nil), Required: (*bool)(nil)}, common.Field{Name: "updated", Type: "date", DocValues: (*bool)(nil), Indexed: (*bool)(nil), Stored: (*bool)(nil), MultiValued: (*bool)(nil), Required: (*bool)(nil)}, common.Field{Name: "completed", Type: "date", DocValues: (*bool)(nil), Indexed: (*bool)(nil), Stored: (*bool)(nil), MultiValued: (*bool)(nil), Required: (*bool)(nil)}, common.Field{Name: "status", Type: "text_general", DocValues: (*bool)(nil), Indexed: (*bool)(nil), Stored: (*bool)(nil), MultiValued: (*bool)(nil), Required: (*bool)(nil)}, common.Field{Name: "request_type", Type: "text_general", DocValues: (*bool)(nil), Indexed: (*bool)(nil), Stored: (*bool)(nil), MultiValued: (*bool)(nil), Required: (*bool)(nil)}, common.Field{Name: "request_payload", Type: "text_general", DocValues: (*bool)(nil), Indexed: (*bool)(nil), Stored: (*bool)(nil), MultiValued: (*bool)(nil), Required: (*bool)(nil)}, common.Field{Name: "version", Type: "text_general", DocValues: (*bool)(nil), Indexed: (*bool)(nil), Stored: (*bool)(nil), MultiValued: (*bool)(nil), Required: (*bool)(nil)}, common.Field{Name: "job_error", Type: "ignored", DocValues: (*bool)(nil), Indexed: (*bool)(nil), Stored: (*bool)(nil), MultiValued: (*bool)(nil), Required: (*bool)(nil)}, common.Field{Name: "dz_message", Type: "ignored", DocValues: (*bool)(nil), Indexed: (*bool)(nil), Stored: (*bool)(nil), MultiValued: (*bool)(nil), Required: (*bool)(nil)}, common.Field{Name: "dz_status", Type: "ignored", DocValues: (*bool)(nil), Indexed: (*bool)(nil), Stored: (*bool)(nil), MultiValued: (*bool)(nil), Required: (*bool)(nil)}, common.Field{Name: "job_link", Type: "ignored", DocValues: (*bool)(nil), Indexed: (*bool)(nil), Stored: (*bool)(nil), MultiValued: (*bool)(nil), Required: (*bool)(nil)}, common.Field{Name: "tenant", Type: "text_general", DocValues: (*bool)(nil), Indexed: (*bool)(nil), Stored: (*bool)(nil), MultiValued: (*bool)(nil), Required: (*bool)(nil)}}

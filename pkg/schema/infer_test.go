@@ -62,6 +62,13 @@ func TestInferSchema(t *testing.T) {
 		assert.NotNil(err)
 	})
 
+	t.Run("use multiValued false by default", func(t *testing.T) {
+		assert := asst.New(t)
+		sma, err := InferSchema(fixture.ByteSlice{})
+		assert.Nil(err)
+		assert.Equal(false, *sma.Fields[0].MultiValued)
+	})
+
 	t.Run("use text_general for []byte by default", func(t *testing.T) {
 		assert := asst.New(t)
 		sma, err := InferSchema(fixture.ByteSlice{})

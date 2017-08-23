@@ -97,6 +97,8 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 		}
 	}
 	req, err := http.NewRequest(method, u.String(), encodedBody)
+	//log.Info(req.URL)
+	//io.Copy(os.Stdout, req.Body)
 	if err != nil {
 		return nil, errors.Wrap(err, "can't create http.Request")
 	}
@@ -120,7 +122,7 @@ func (c *Client) Get(ctx context.Context, url string, v interface{}) (*Response,
 }
 
 func (c *Client) Post(ctx context.Context, url string, body, v interface{}) (*Response, error) {
-	req, err := c.NewRequest(http.MethodGet, url, body)
+	req, err := c.NewRequest(http.MethodPost, url, body)
 	if err != nil {
 		return nil, err
 	}
