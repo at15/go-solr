@@ -50,6 +50,8 @@ func TestInferSchema(t *testing.T) {
 		assert.Equal(true, *f.Stored)
 		assert.Equal(false, *f.MultiValued)
 		assert.Equal(true, *f.Required)
+		// ignored
+		assert.Equal(fieldtype.Ignored, sma.Fields[1].Type)
 	})
 
 	t.Run("returns error when no exported field found", func(t *testing.T) {

@@ -51,14 +51,17 @@ func InferSchema(st interface{}) (*common.Schema, error) {
 		// ignore the field if it is ignored by either json tag or own tag
 		// TODO: we need to set type for filed that is not ignored by json by ignored by solr to ignored,
 		// otherwise solr seems to be automatically create field based on input document in managed schema
-		if field.Tag.Get(jsonTagName) == "-" || field.Tag.Get(TagName) == "-" {
-			log.Tracef("ignore field %s because - is in tag", field.Name)
+		if field.Tag.Get(jsonTagName) == "-" {
+			log.Tracef("ignore field %s because it is ignored by json", field.Name)
 			continue
 		}
 		hasExportedField = true
 		f, err := inferFieldSchema(field)
 		if err != nil {
 			return nil, err
+		}
+		if field.Tag.Get(TagName) == "-" {
+			f.Type = fieldtype.Ignored
 		}
 		sma.Fields = append(sma.Fields, *f)
 	}

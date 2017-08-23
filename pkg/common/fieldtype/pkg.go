@@ -1,5 +1,9 @@
 package fieldtype
 
+const (
+	Ignored = "ignored"
+)
+
 // primitive types
 const (
 	Binary       = "binary"
