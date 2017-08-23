@@ -1,3 +1,16 @@
+/*
+Package schema provides core schema management and schema generation using reflection.
+Schema related structs (Schema, Field etc.) and filedtype are defined in common package
+
+Examples of struct filed tags and their meanings
+
+	// First value is treated as field name, if it is "-", this field is ignored
+	Foo      string `solr:"foo"`
+	IgnoreMe string `solr:"-"`
+
+	// Multiple values are separated by ",", you can leave first value empty, we will use the field name or json tag (if presented)
+	Foo      string `json:"foo" solr:",type=string,docValues=true,indexed=false,stored=true,multiValued=false,required=true"`
+*/
 package schema
 
 import (

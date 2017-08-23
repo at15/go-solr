@@ -5,7 +5,7 @@ BUILD_TIME = $(shell date +%Y-%m-%dT%H:%M:%S%z)
 BUILD_USER = ${USER}
 FLAGS = -X main.Version=$(VERSION) -X main.BuildCommit=$(BUILD_COMMIT) -X main.BuildTime=$(BUILD_TIME) -X main.BuildUser=$(BUILD_USER)
 
-.PHONY: example install test test-in-docker docker-test
+.PHONY: example install test test-in-docker docker-test godoc
 
 example:
 	cd example/job; go run main.go
@@ -29,3 +29,6 @@ fmt:
 	gofmt -d -l -w ./example/job
 loc:
 	cloc --exclude-dir=vendor,.idea,script .
+godoc:
+	@echo open http://localhost:6060/pkg/github.com/at15/go-solr
+	godoc -http=":6060"

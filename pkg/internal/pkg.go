@@ -1,3 +1,6 @@
+/*
+ Package internal wraps http.Client to do json encoding/decoding automatically and add default query parameters (i.e. wt=json)
+*/
 package internal
 
 import (
