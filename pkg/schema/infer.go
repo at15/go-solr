@@ -60,9 +60,6 @@ func InferSchema(st interface{}) (*common.Schema, error) {
 		if err != nil {
 			return nil, err
 		}
-		if field.Tag.Get(TagName) == "-" {
-			f.Type = fieldtype.Ignored
-		}
 		sma.Fields = append(sma.Fields, *f)
 	}
 	if !hasExportedField {
@@ -78,6 +75,9 @@ func inferFieldSchema(field reflect.StructField) (*common.Field, error) {
 	fs := &common.Field{Name: field.Name, Type: ""}
 	if err := applyTags(fs, field.Tag); err != nil {
 		return nil, err
+	}
+	if field.Tag.Get(TagName) == "-" {
+		fs.Type = fieldtype.Ignored
 	}
 	// only infer the type when user didn't explicit specify it
 	if fs.Type == "" {

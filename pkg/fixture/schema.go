@@ -5,6 +5,11 @@ package fixture
 
 import "time"
 
+type JobError struct {
+	Code int
+	Msg  string
+}
+
 // TODO: can json & solr handle time.Duration
 type Job struct {
 	Name         string    `json:"name" solr:"name"`
@@ -12,7 +17,7 @@ type Job struct {
 	EndTime      time.Time `json:"endTime"`
 	Day          bool      `json:"day"`
 	JsonIgnoreMe string    `json:"-"`
-	IgnoreMe     string    `json:"ignore_me" solr:"-"`
+	IgnoreMe     JobError    `json:"ignore_me" solr:"-"`
 	hidden       string
 }
 
