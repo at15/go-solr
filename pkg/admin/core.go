@@ -36,8 +36,12 @@ func (svc *Service) CreateCore(ctx context.Context, core common.Core) error {
 	q := req.URL.Query()
 	q.Set(pAction, actionCreate)
 	q.Set(pName, core.Name)
-	q.Set(pInstanceDir, core.InstanceDir)
-	q.Set(pConfigSet, core.ConfigSet)
+	if core.InstanceDir != "" {
+		q.Set(pInstanceDir, core.InstanceDir)
+	}
+	if core.ConfigSet != "" {
+		q.Set(pConfigSet, core.ConfigSet)
+	}
 	req.URL.RawQuery = q.Encode()
 	if _, err := svc.client.Do(ctx, req, ioutil.Discard); err != nil {
 		return errors.WithMessage(err, fmt.Sprintf("solr: can't create core %s", req.URL.String()))

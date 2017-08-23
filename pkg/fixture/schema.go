@@ -4,8 +4,8 @@ Package fixture provides struct definition and fake data generation
 package fixture
 
 import (
-	"time"
 	"github.com/at15/go-solr/pkg/common"
+	"time"
 )
 
 type JobError struct {
@@ -20,7 +20,7 @@ type Job struct {
 	EndTime      time.Time `json:"endTime"`
 	Day          bool      `json:"day"`
 	JsonIgnoreMe string    `json:"-"`
-	IgnoreMe     JobError    `json:"ignore_me" solr:"-"`
+	IgnoreMe     JobError  `json:"ignore_me" solr:"-"`
 	hidden       string
 }
 

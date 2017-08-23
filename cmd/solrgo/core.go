@@ -11,6 +11,7 @@ import (
 
 var (
 	overwrite = false // TODO: create if not exist
+	configSet = ""
 )
 
 var CoreCmd = &cobra.Command{
@@ -43,7 +44,9 @@ var CoreCreateCmd = &cobra.Command{
 			log.Fatal(err)
 			return
 		}
-		if err := solr.Admin.CreateCoreIfNotExists(context.Background(), common.NewCore(name)); err != nil {
+		core := common.NewCore(name)
+		core.ConfigSet = configSet
+		if err := solr.Admin.CreateCoreIfNotExists(context.Background(), core); err != nil {
 			log.Fatalf("Create core %s failed %v", name, err)
 			return
 		} else {
@@ -62,6 +65,8 @@ var CoreDeleteCmd = &cobra.Command{
 }
 
 func init() {
+	CoreCreateCmd.Flags().StringVar(&configSet, "configSet", common.DefaultConfigSet, "specify configSet for the core, it mut already exists")
+
 	CoreCmd.AddCommand(CoreCreateCmd)
 	CoreCmd.AddCommand(CoreDeleteCmd)
 }

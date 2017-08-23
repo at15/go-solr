@@ -6,8 +6,8 @@ import (
 
 	"github.com/at15/go-solr/pkg/common"
 	"github.com/at15/go-solr/pkg/common/fieldtype"
-	asst "github.com/stretchr/testify/assert"
 	"github.com/at15/go-solr/pkg/fixture"
+	asst "github.com/stretchr/testify/assert"
 )
 
 func TestService_AddField(t *testing.T) {

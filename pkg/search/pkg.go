@@ -1,4 +1,4 @@
-package indexing
+package search
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 var log = util.Logger.RegisterPkg()
 
 const (
-	baseURLTmpl = "/solr/%s/update"
+	baseURLTmpl = "/solr/%s/query" // TODO: for real time get it's /get instead of /query
 )
 
 type Service struct {
@@ -33,3 +33,5 @@ func (svc *Service) SetCore(core common.Core) {
 	svc.core = core
 	svc.baseURL = fmt.Sprintf(baseURLTmpl, core.Name)
 }
+
+// TODO: http://lucene.apache.org/solr/guide/6_6/common-query-parameters.html#CommonQueryParameters-Thefl_FieldList_Parameter
