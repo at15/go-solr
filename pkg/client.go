@@ -89,3 +89,13 @@ func (c *SolrClient) UseCore(coreName string) error {
 	// TODO: maybe we should test if this core exists
 	return nil
 }
+
+func (c *SolrClient) GetCore(coreName string) (*core.Service, error) {
+	cor, ok := c.cores[coreName]
+	if ok {
+		return cor, nil
+	}
+	cor = core.New(c.client, common.NewCore(coreName), c.Admin)
+	c.cores[coreName] = cor
+	return cor, nil
+}
