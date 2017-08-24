@@ -91,6 +91,14 @@ func (q *CommonQuery) Encode() *url.Values {
 //TODO: set filter query https://lucene.apache.org/solr/guide/6_6/common-query-parameters.html#CommonQueryParameters-Thefq_FilterQuery_Parameter
 // The fq parameter defines a query that can be used to restrict the superset of documents that can be returned, without influencing score.
 // It can be very useful for speeding up complex queries, since the queries specified with fq are cached independently of the main query
+//// no filter cache
+//q=singer(bob marley) title:(redemption song) language:english genre:rock
+//
+//// one cache entry
+//q=singer(bob marley) title:(redemption song)&fq=language:english AND genre:rock
+//
+//// two cache entry
+//q=singer(bob marley) title:(redemption song)&fq=language:english&fq=genre:rock
 
 type Query interface {
 	DefType() string
@@ -117,6 +125,7 @@ func (q *StdQuery) DefaultField(field string) *StdQuery {
 }
 
 // https://lucene.apache.org/solr/guide/6_6/the-standard-query-parser.html#TheStandardQueryParser-BooleanOperatorsSupportedbytheStandardQueryParser
+// title:"The Right Way" AND text:go
 // TODO: not, +, -
 // TODO: grouping https://lucene.apache.org/solr/guide/6_6/the-standard-query-parser.html#TheStandardQueryParser-GroupingTermstoFormSub-Queries
 func (q *StdQuery) And(field string, val string) *StdQuery {
@@ -137,8 +146,11 @@ func (q *StdQuery) Or(field string, val string) *StdQuery {
 	return q
 }
 
-// TODO: allow set raw query
-// title:"The Right Way" AND text:go
+// Q sets the q parameter directly
+func (q *StdQuery) Q(s string) *StdQuery {
+	q.q = s
+	return q
+}
 
 func (q *StdQuery) Encode() *url.Values {
 	p := q.CommonQuery.Encode()
