@@ -24,9 +24,11 @@ type Service struct {
 	admin  *admin.Service
 	Schema *schema.Service
 
-	core         common.Core
-	baseURL      string
-	baseAdminURL string
+	core          common.Core
+	baseURL       string
+	baseAdminURL  string
+	baseUpdateURL string
+	baseSelectURL string
 }
 
 func New(client *internal.Client, core common.Core, admin *admin.Service) *Service {
@@ -44,6 +46,8 @@ func (svc *Service) setCore(core common.Core) {
 	svc.core = core
 	svc.baseURL = fmt.Sprintf(baseURLTmpl, core.Name)
 	svc.baseAdminURL = svc.baseURL + "admin/"
+	svc.baseUpdateURL = svc.baseURL + "update"
+	svc.baseSelectURL = svc.baseURL + "select"
 }
 
 func (svc *Service) NameOfCore() string {
