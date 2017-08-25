@@ -13,12 +13,14 @@ type SelectResponse struct {
 		Status int `json:"status"`
 		QTime  int `json:"QTime"`
 		Params struct {
-			Q      string `json:"q"`
-			Df     string `json:"df"`
-			Indent string `json:"indent"`
-			Start  string `json:"start"`
-			Sort   string `json:"sort"`
-			Wt     string `json:"wt"`
+			Q          string `json:"q"`
+			Df         string `json:"df"`
+			FacetField string `json:"facet.field"`
+			Facet      string `json:"facet"`
+			Indent     string `json:"indent"`
+			Start      string `json:"start"`
+			Sort       string `json:"sort"`
+			Wt         string `json:"wt"`
 			//NAMING_FAILED string `json:"_"`
 		} `json:"params"`
 	} `json:"responseHeader"`
@@ -27,6 +29,13 @@ type SelectResponse struct {
 		Start    int                      `json:"start"`
 		Docs     []map[string]interface{} `json:"docs"`
 	} `json:"response"`
+	FacetCounts struct {
+		FacetQueries   interface{}            `json:"facet_queries"`
+		FacetFields    map[string]interface{} `json:"facet_fields"` // NOTE: facet fields mix string and number in array https://github.com/at15/go-solr/issues/17
+		FacetRanges    interface{}            `json:"facet_ranges"`
+		FacetIntervals interface{}            `json:"facet_intervals"`
+		FacetHeatmaps  interface{}            `json:"facet_heatmaps"`
+	} `json:"facet_counts"`
 }
 
 func (svc *Service) Select(ctx context.Context, query search.Query) (*SelectResponse, error) {

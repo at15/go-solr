@@ -40,5 +40,6 @@ func TestStdQuery_Encode(t *testing.T) {
 		Start(10).
 		Rows(10)
 	s.And("name", "docker*").Or("description", "container")
+	s.FacetField("name").FacetField("rating")
 	t.Log(s.Encode().Encode())
 }

@@ -111,8 +111,9 @@ var _ Query = (*StdQuery)(nil)
 // StdQuery is for Standard Query Parser https://cwiki.apache.org/confluence/display/solr/The+Standard+Query+Parser
 type StdQuery struct {
 	CommonQuery
-	q  string
-	df string
+	q           string
+	df          string
+	facetFields []string // TODO: there are many more configuration for facet
 }
 
 func (q *StdQuery) DefType() string {
@@ -121,6 +122,11 @@ func (q *StdQuery) DefType() string {
 
 func (q *StdQuery) DefaultField(field string) *StdQuery {
 	q.df = field
+	return q
+}
+
+func (q *StdQuery) FacetField(field string) *StdQuery {
+	q.facetFields = append(q.facetFields, field)
 	return q
 }
 
@@ -154,9 +160,14 @@ func (q *StdQuery) Q(s string) *StdQuery {
 
 func (q *StdQuery) Encode() *url.Values {
 	p := q.CommonQuery.Encode()
+	p.Set("q", q.q)
 	if q.df != "" {
 		p.Set("df", q.df)
 	}
-	p.Set("q", q.q)
+	if len(q.facetFields) > 0 {
+		for _, field := range q.facetFields {
+			p.Add("facet.field", field)
+		}
+	}
 	return p
 }
