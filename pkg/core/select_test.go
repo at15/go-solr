@@ -41,7 +41,8 @@ func TestService_SelectFacet(t *testing.T) {
 	assert.Nil(err)
 	//t.Log(res.Response.Docs)
 	t.Log(len(res.FacetCounts.FacetFields))
-	//t.Log(len(res.FacetCounts.FacetFields["status"].Values))
+	t.Log(len(res.FacetCounts.FacetFields["status"].Values))
+	t.Log(len(res.FacetCounts.FacetFields["submittedby"].Values))
 }
 
 func TestFacetField_UnmarshalJSON(t *testing.T) {
@@ -50,9 +51,10 @@ func TestFacetField_UnmarshalJSON(t *testing.T) {
 	b := util.ReadFixture(t, "fixture/facet.json")
 	res := SelectResponse{}
 	assert.Nil(json.Unmarshal(b, &res))
-
-	assert.Equal(123, res.FacetCounts.FacetFields["foo"]["a"])
-	assert.Equal(321, res.FacetCounts.FacetFields["foo"]["b"])
+	assert.Equal("a", res.FacetCounts.FacetFields["foo"].Values[0])
+	assert.Equal(123, res.FacetCounts.FacetFields["foo"].Counts[0])
+	assert.Equal("b", res.FacetCounts.FacetFields["foo"].Values[1])
+	assert.Equal(321, res.FacetCounts.FacetFields["foo"].Counts[1])
 	b, err := json.Marshal(res.FacetCounts.FacetFields)
 	t.Log(string(b))
 	assert.Nil(err)

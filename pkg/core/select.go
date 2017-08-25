@@ -39,7 +39,10 @@ type SelectResponse struct {
 	} `json:"facet_counts"`
 }
 
-type FacetField map[string]int
+type FacetField struct {
+	Values []string `json:"values"`
+	Counts []int    `json:"counts"`
+}
 
 // https://groups.google.com/forum/#!topic/golang-nuts/IxPipKwI-zQ
 // https://play.golang.org/p/YgUIFxT7hA
@@ -49,15 +52,16 @@ func (f *FacetField) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &mixed); err != nil {
 		return err
 	}
-	m := make(map[string]int, len(mixed)/2)
+	f.Values = make([]string, 0, len(mixed)/2)
+	f.Counts = make([]int, 0, len(mixed)/2)
 	for i := 0; i < len(mixed); i += 2 {
+		f.Values = append(f.Values, mixed[i].String())
 		c, err := mixed[i+1].Int64()
 		if err != nil {
 			return err
 		}
-		m[mixed[i].String()] = int(c)
+		f.Counts = append(f.Counts, int(c))
 	}
-	*f = m
 	return nil
 }
 
