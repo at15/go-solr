@@ -1,0 +1,37 @@
+{
+  "responseHeader": {
+    "status": 0,
+    "QTime": 4,
+    "params": {
+      "q": "*:*",
+      "facet.field": "namespace",
+      "indent": "on",
+      "facet": "on",
+      "wt": "json",
+      "_": "1503647416911"
+    }
+  },
+  "response": {
+    "numFound": 8619,
+    "start": 0,
+    "docs": [
+      {
+        "foo": "bar"
+      }
+    ]
+  },
+  "facet_counts": {
+    "facet_queries": {},
+    "facet_fields": {
+      "foo": [
+        "a",
+        123,
+        "b",
+        321
+      ]
+    },
+    "facet_ranges": {},
+    "facet_intervals": {},
+    "facet_heatmaps": {}
+  }
+}

@@ -6,6 +6,7 @@ import (
 	"github.com/at15/go-solr/pkg/search"
 	"github.com/pkg/errors"
 	"net/http"
+	"encoding/json"
 )
 
 type SelectResponse struct {
@@ -30,12 +31,34 @@ type SelectResponse struct {
 		Docs     []map[string]interface{} `json:"docs"`
 	} `json:"response"`
 	FacetCounts struct {
-		FacetQueries   interface{}            `json:"facet_queries"`
-		FacetFields    map[string]interface{} `json:"facet_fields"` // NOTE: facet fields mix string and number in array https://github.com/at15/go-solr/issues/17
-		FacetRanges    interface{}            `json:"facet_ranges"`
-		FacetIntervals interface{}            `json:"facet_intervals"`
-		FacetHeatmaps  interface{}            `json:"facet_heatmaps"`
+		FacetQueries   interface{}                `json:"facet_queries"`
+		FacetFields    map[string]FacetField `json:"facet_fields"` // NOTE: facet fields mix string and number in array https://github.com/at15/go-solr/issues/17
+		FacetRanges    interface{}                `json:"facet_ranges"`
+		FacetIntervals interface{}                `json:"facet_intervals"`
+		FacetHeatmaps  interface{}                `json:"facet_heatmaps"`
 	} `json:"facet_counts"`
+}
+
+type FacetField struct {
+	Values []string `json:"values"`
+	Counts []int `json:"counts"`
+}
+
+func (f *FacetField) UnmarshalJSON(data []byte) error {
+	//log.Info("facet field json unmarshaler called")
+	var mixed []json.Number
+	if err := json.Unmarshal(data, &mixed); err != nil {
+		return err
+	}
+	for i := 0; i < len(mixed); i += 2 {
+		f.Values = append(f.Values, mixed[i].String())
+		c, err := mixed[i+1].Int64()
+		if err != nil {
+			return err
+		}
+		f.Counts = append(f.Counts, int(c))
+	}
+	return nil
 }
 
 func (svc *Service) Select(ctx context.Context, query search.Query) (*SelectResponse, error) {
