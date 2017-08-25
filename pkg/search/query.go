@@ -165,6 +165,7 @@ func (q *StdQuery) Encode() *url.Values {
 		p.Set("df", q.df)
 	}
 	if len(q.facetFields) > 0 {
+		p.Set("facet", "on")
 		for _, field := range q.facetFields {
 			p.Add("facet.field", field)
 		}

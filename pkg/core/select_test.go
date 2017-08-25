@@ -2,12 +2,14 @@ package core
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"testing"
 
-	"github.com/dyweb/gommon/util"
+	"github.com/at15/go-solr/pkg/common"
 	"github.com/at15/go-solr/pkg/search"
+	"github.com/dyweb/gommon/util"
 	asst "github.com/stretchr/testify/assert"
-	"encoding/json"
 )
 
 func TestService_Select(t *testing.T) {
@@ -19,6 +21,27 @@ func TestService_Select(t *testing.T) {
 	assert.Nil(err)
 	t.Log(res.Response.Docs)
 	t.Log(res)
+}
+
+func TestService_SelectFacet(t *testing.T) {
+	t.Skip("only works locally")
+
+	assert := asst.New(t)
+
+	jobSvc := New(tSvc.client, common.NewCore("jobs"), tSvc.admin)
+	sq := search.StdQuery{}
+	sq.And("*", "*")
+	sq.IncludeField("raw_document")
+	sq.DefaultField("namespace")
+	sq.FacetField("status")
+	sq.FacetField("submittedby")
+	sq.FacetField("namespace")
+	res, err := jobSvc.Select(context.Background(), &sq)
+	fmt.Printf("%+v", err)
+	assert.Nil(err)
+	//t.Log(res.Response.Docs)
+	t.Log(len(res.FacetCounts.FacetFields))
+	t.Log(len(res.FacetCounts.FacetFields["status"].Values))
 }
 
 func TestFacetField_UnmarshalJSON(t *testing.T) {
