@@ -1,0 +1,5 @@
+package solr
+
+func NewCore() {
+
+}

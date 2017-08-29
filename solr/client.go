@@ -1,21 +1,22 @@
-package pkg
+package solr
 
 import (
 	"context"
 
-	"github.com/at15/go-solr/pkg/admin"
-	"github.com/at15/go-solr/pkg/common"
-	"github.com/at15/go-solr/pkg/core"
-	"github.com/at15/go-solr/pkg/internal"
-	"github.com/at15/go-solr/pkg/util"
-	"github.com/pkg/errors"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+
+	"github.com/at15/go-solr/pkg/admin"
+	"github.com/at15/go-solr/pkg/common"
+	"github.com/at15/go-solr/pkg/core"
+	"github.com/at15/go-solr/solr/internal"
+	"github.com/at15/go-solr/solr/util/logutil"
+	"github.com/pkg/errors"
 )
 
-var log = util.Logger.RegisterPkg()
+var log = logutil.Logger.RegisterPkg()
 
 const (
 	DefaultAddr = "http://localhost:8983/"
@@ -28,19 +29,7 @@ type Config struct {
 	Cloud       bool   `json:"cloud" yaml:"cloud"`
 }
 
-type SolrClient struct {
-	mu     sync.Mutex
-	config Config
-	client *internal.Client
-
-	// TODO: make admin private and proxy necessary methods
-	Admin       *admin.Service
-	DefaultCore *core.Service
-	cores       map[string]*core.Service
-}
-
-func New(config Config) (*SolrClient, error) {
-	var err error
+func (c *Confg) Validate() error {
 	// valid addr
 	if config.Addr == "" {
 		config.Addr = DefaultAddr
@@ -54,6 +43,22 @@ func New(config Config) (*SolrClient, error) {
 	}
 	if config.DefaultCore == "" {
 		config.DefaultCore = DefaultCore
+	}
+}
+
+type SolrClient struct {
+	mu     sync.Mutex
+	config Config
+	client *internal.Client
+
+	DefaultCore *core.Service
+	cores       map[string]*core.Service
+}
+
+func NewClient(config Config) (*SolrClient, error) {
+	var err error
+	if err = config.Validate(); err != nil {
+		return nil, err
 	}
 	c := &SolrClient{
 		config: config,
@@ -91,6 +96,9 @@ func (c *SolrClient) UseCore(coreName string) error {
 }
 
 func (c *SolrClient) GetCore(coreName string) (*core.Service, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	cor, ok := c.cores[coreName]
 	if ok {
 		return cor, nil
