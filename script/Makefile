@@ -12,5 +12,7 @@ install:
 uninstall:
 	rm -rf solr
 reinstall: uninstall install
+start:
+	./solr/bin/solr start
 stop:
 	./solr/bin/solr stop

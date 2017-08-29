@@ -4,10 +4,10 @@
 package internal
 
 import (
-	"github.com/at15/go-solr/pkg/util"
+	"github.com/at15/go-solr/solr/util/logutil"
 )
 
-var log = util.Logger.RegisterPkg()
+var log = logutil.Logger.RegisterPkg()
 
 const (
 	DefaultUserAgent  = "go-solr"

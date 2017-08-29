@@ -2,67 +2,70 @@ package solr
 
 import (
 	"context"
-
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
 
-	"github.com/at15/go-solr/pkg/admin"
-	"github.com/at15/go-solr/pkg/common"
-	"github.com/at15/go-solr/pkg/core"
 	"github.com/at15/go-solr/solr/internal"
-	"github.com/at15/go-solr/solr/util/logutil"
 	"github.com/pkg/errors"
 )
 
-var log = logutil.Logger.RegisterPkg()
-
 const (
+	AddrEnvName = "GO_SOLR_ADDR"
 	DefaultAddr = "http://localhost:8983/"
 	DefaultCore = "demo"
 )
 
+// Config
 type Config struct {
 	Addr        string `json:"addr" yaml:"addr"`
 	DefaultCore string `json:"defaultCore" yaml:"defaultCore"`
 	Cloud       bool   `json:"cloud" yaml:"cloud"`
 }
 
-func (c *Confg) Validate() error {
+// Validate checks if Addr is a valid URL and assign default values
+func (c *Config) Validate() error {
+	var err error
 	// valid addr
-	if config.Addr == "" {
-		config.Addr = DefaultAddr
+	if c.Addr == "" {
+		c.Addr = DefaultAddr
 	}
 	// addr will be used as baseURL, so it always contains a trailing slash
-	if !strings.HasSuffix(config.Addr, "/") {
-		config.Addr += "/"
+	if !strings.HasSuffix(c.Addr, "/") {
+		c.Addr += "/"
 	}
-	if _, err = url.Parse(config.Addr); err != nil {
-		return nil, errors.Wrap(err, "invalid host address in config")
+	if _, err = url.Parse(c.Addr); err != nil {
+		return errors.Wrap(err, "invalid host address in config")
 	}
-	if config.DefaultCore == "" {
-		config.DefaultCore = DefaultCore
+	if c.DefaultCore == "" {
+		c.DefaultCore = DefaultCore
 	}
+	if c.Cloud == true {
+		return errors.New("SolrCloud is not supported for now")
+	}
+	return nil
 }
 
-type SolrClient struct {
+// Client is used for admin tasks like create core, for document operation (core specific) like indexing, query use CoreClient instead
+type Client struct {
 	mu     sync.Mutex
 	config Config
 	client *internal.Client
 
-	DefaultCore *core.Service
-	cores       map[string]*core.Service
+	DefaultCore *CoreClient
+	cores       map[string]*CoreClient
 }
 
-func NewClient(config Config) (*SolrClient, error) {
+// NewClient creates Client based on config, it returns error when the config is invalid, it does NOT check network connection
+func NewClient(config Config) (*Client, error) {
 	var err error
 	if err = config.Validate(); err != nil {
 		return nil, err
 	}
-	c := &SolrClient{
+	c := &Client{
 		config: config,
-		cores:  make(map[string]*core.Service),
+		cores:  make(map[string]*CoreClient),
 	}
 	// TODO: let user config transport (i.e. use ss) and client timeout
 	tr := &http.Transport{}
@@ -70,40 +73,39 @@ func NewClient(config Config) (*SolrClient, error) {
 	if c.client, err = internal.NewClient(h, internal.BaseURL(config.Addr)); err != nil {
 		return nil, errors.WithMessage(err, "can't create internal http client wrapper")
 	}
-	c.Admin = admin.New(c.client)
-	c.DefaultCore = core.New(c.client, common.NewCore(config.DefaultCore), c.Admin)
+	c.DefaultCore = NewCoreClient(c, NewCore(config.DefaultCore))
 	c.cores[config.DefaultCore] = c.DefaultCore
 	return c, nil
 }
 
-// ping can only be used when a core is created https://stackoverflow.com/questions/19248746/configure-health-check-in-solr-4
-func (c *SolrClient) IsUp(ctx context.Context) error {
+// IsUp check if the server is running by querying system info, we don't use ping because you can only ping a core, not entire solr
+// https://stackoverflow.com/questions/19248746/configure-health-check-in-solr-4
+func (c *Client) IsUp(ctx context.Context) error {
 	// using http://localhost:8983/solr/admin/info/system?wt=json
-	info, err := c.Admin.SystemInfo(ctx)
+	info, err := c.SystemInfo(ctx)
 	log.Debug(info)
 	return err
 }
 
-func (c *SolrClient) UseCore(coreName string) error {
+// UseCore change DefaultCore to CoreClient with coreName, it does NOT check if the core exists or is up
+func (c *Client) UseCore(coreName string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	c.DefaultCore = core.New(c.client, common.NewCore(coreName), c.Admin)
-	c.cores[c.DefaultCore.NameOfCore()] = c.DefaultCore
-
-	// TODO: maybe we should test if this core exists
-	return nil
+	c.DefaultCore = NewCoreClient(c, NewCore(coreName))
+	c.cores[coreName] = c.DefaultCore
 }
 
-func (c *SolrClient) GetCore(coreName string) (*core.Service, error) {
+// GetCore returns existing CoreClient or create a new one and save it before return
+func (c *Client) GetCore(coreName string) *CoreClient {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
 	cor, ok := c.cores[coreName]
 	if ok {
-		return cor, nil
+		return cor
 	}
-	cor = core.New(c.client, common.NewCore(coreName), c.Admin)
+	cor = NewCoreClient(c, NewCore(coreName))
 	c.cores[coreName] = cor
-	return cor, nil
+	return cor
 }
