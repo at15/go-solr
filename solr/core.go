@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"time"
 
 	"github.com/at15/go-solr/solr/internal"
@@ -88,4 +89,37 @@ func (c *CoreClient) Status(ctx context.Context, includeIndexInfo bool) (*CoreSt
 		return nil, errors.Errorf("solr: core %s not found", c.name)
 	}
 	return &status, nil
+}
+
+func (c *CoreClient) Select(ctx context.Context, query Query) (*SelectResponse, error) {
+	res := &SelectResponse{}
+	req, err := c.client.NewRequest(http.MethodGet, c.baseSelectURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	q := query.Encode()
+	// TODO: maybe we can pass *url.Values to encode so we can reuse existing parameters
+	q.Set("wt", "json")
+	req.URL.RawQuery = q.Encode()
+	log.Info(req.URL)
+	if _, err := c.client.Do(ctx, req, res); err != nil {
+		return nil, errors.WithMessage(err, fmt.Sprintf("solr: can't select %s", req.URL.String()))
+	}
+	return res, nil
+}
+
+func (c *CoreClient) Update(ctx context.Context, body interface{}) error {
+	req, err := c.client.NewRequest(http.MethodPost, c.baseUpdateURL, body)
+	if err != nil {
+		return err
+	}
+	q := req.URL.Query()
+	q.Set("commit", "true")
+	req.URL.RawQuery = q.Encode()
+	// FIXME: error response might be a 200 response,
+	// the ok response is {"responseHeader":{"status":0,"QTime":238}} without any information so we can ignore
+	if _, err := c.client.Do(ctx, req, ioutil.Discard); err != nil {
+		return errors.WithMessage(err, fmt.Sprintf("solr: can't update document %s", req.URL.String()))
+	}
+	return nil
 }
