@@ -21,6 +21,7 @@ test-in-docker:
 # go test -v -cover ./pkg/...
 # cd example/job; go run main.go
 docker-test:
+	cd script; docker-compose build
 	cd script; docker-compose run golang
 	cd script; docker-compose down
 fmt:
