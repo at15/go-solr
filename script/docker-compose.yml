@@ -4,6 +4,7 @@ services:
     image: solr:6.6.0
     ports:
       - "8984:8983"
+    # TODO: copy the cores so we can have multiple cores in the test
   golang:
     image: golang:1.8.3
     command: make -C /go/src/github.com/at15/go-solr test-in-docker

@@ -2,6 +2,8 @@ package solr
 
 import "testing"
 
+// TODO: assert instead of just log it (though the test coverage don't know if we are asserting or logging, as long as it is executed, coverage++)
+
 func TestCommonQuery_Start(t *testing.T) {
 	c := CommonQuery{}
 	c.Start(10).Rows(10)

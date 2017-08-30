@@ -7,8 +7,12 @@ import (
 	"strings"
 )
 
-type SortOrder string
-type DebugType string
+// TODO: we should be able to parse the query as well as build the query
+
+type (
+	SortOrder string
+	DebugType string
+)
 
 const (
 	SortOrderAsc        SortOrder = "asc"
@@ -20,6 +24,13 @@ const (
 	DebugResults        DebugType = "results"
 	DebugAll            DebugType = "all"
 )
+
+type Query interface {
+	DefType() string
+	Encode() *url.Values // TODO: maybe change it to ToParams, it's quite strange to call Encode().Encode()
+}
+
+var _ Query = (*StdQuery)(nil)
 
 type CommonQuery struct {
 	sortFields []string // NOTE: we use array because we have to keep the order
@@ -100,13 +111,6 @@ func (q *CommonQuery) Encode() *url.Values {
 //// two cache entry
 //q=singer(bob marley) title:(redemption song)&fq=language:english&fq=genre:rock
 
-type Query interface {
-	DefType() string
-	Encode() *url.Values // TODO: maybe change it to ToParams
-}
-
-var _ Query = (*StdQuery)(nil)
-
 // TODO: https://github.paypal.com/piguo/tiller-server/issues/30
 // StdQuery is for Standard Query Parser https://cwiki.apache.org/confluence/display/solr/The+Standard+Query+Parser
 type StdQuery struct {
@@ -132,8 +136,9 @@ func (q *StdQuery) FacetField(field string) *StdQuery {
 
 // https://lucene.apache.org/solr/guide/6_6/the-standard-query-parser.html#TheStandardQueryParser-BooleanOperatorsSupportedbytheStandardQueryParser
 // title:"The Right Way" AND text:go
-// TODO: not, +, -
+// TODO: not, +, - operator should be added
 // TODO: grouping https://lucene.apache.org/solr/guide/6_6/the-standard-query-parser.html#TheStandardQueryParser-GroupingTermstoFormSub-Queries
+// TODO: the semantic is quite strange, the first And .... normally it should be Where().And()...
 func (q *StdQuery) And(field string, val string) *StdQuery {
 	if q.q != "" {
 		q.q += fmt.Sprintf(" AND %s:%s", field, val)
