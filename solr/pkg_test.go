@@ -7,6 +7,7 @@ import (
 
 var tClient *Client
 var tDemoCoreClient *CoreClient
+var tFilmClient *CoreClient
 
 func TestMain(m *testing.M) {
 	log.Info("Setup")
@@ -21,6 +22,7 @@ func TestMain(m *testing.M) {
 		return
 	}
 	tDemoCoreClient = tClient.GetCore("demo")
+	tFilmClient = tClient.GetCore("film")
 	v := m.Run()
 	log.Info("tear down")
 	os.Exit(v)

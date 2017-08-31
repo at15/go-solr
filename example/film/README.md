@@ -12,7 +12,15 @@ We already updated the schema, most fields all inferred by Solr.
 solrgo core index film films.json
 ````
 
-TODO
+- http://localhost:8983/solr/films/query?q=name:batman
+- http://localhost:8983/solr/films/query?q=*:*&fq=genre:%22Superhero%20movie%22
+- http://localhost:8983/solr/films/query?q=*:*&facet=true&facet.field=genre
+- http://localhost:8983/solr/films/browse
+- http://localhost:8983/solr/films/browse?facet.field=genre
+
+## Fixed
+
+file permission caused by Docker's `COPY` command during build, it's still `root:root` even when `USER` is specified https://github.com/at15/go-solr/issues/19
 
 ````log
 INFO[0000] Core job already exists pkg=gosolr 

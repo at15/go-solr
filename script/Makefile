@@ -22,6 +22,7 @@ config:
 	cp ../example/film/managed-schema.xml ./solr/server/solr/configsets/film/conf/managed-schema
 	cp ../example/job/managed-schema.xml ./solr/server/solr/configsets/job/conf/managed-schema
 create: config
+	solrgo core create demo
 	solrgo core create film --configSet film
 	solrgo core create job --configSet job
 

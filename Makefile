@@ -21,8 +21,7 @@ test-in-docker:
 	solrgo core create film --configSet film
 	solrgo core create job --configSet job
 	cd example/film; solrgo core index film films.json
-# go test -v -cover ./pkg/...
-# cd example/job; go run main.go
+	go test -v -cover ./solr/...
 docker-test:
 	cd script; docker-compose build
 	cd script; docker-compose run golang

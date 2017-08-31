@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/spf13/cobra"
 	"github.com/at15/go-solr/solr"
+	"github.com/spf13/cobra"
 )
 
 var CreateCmd = &cobra.Command{
@@ -15,7 +15,7 @@ var CreateCmd = &cobra.Command{
 }
 
 // CreateCoreCmd is an alias for CoreCreateCmd, so users can use solrgo create core demo instead solrgo core create demo
-// TODO: though I am quite wondering how golang determine the initialization order of package level variables
+// TODO: though I am wondering how golang determine the initialization order of package level variables
 var CreateCoreCmd = &cobra.Command{
 	Use:   "core",
 	Short: CoreCreateCmd.Short,

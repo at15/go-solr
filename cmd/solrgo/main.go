@@ -14,7 +14,7 @@ var (
 )
 
 var RootCmd = &cobra.Command{
-	Use:   "gosolr",
+	Use:   "solrgo",
 	Short: "Solr client in go",
 	Long:  "Solr client and util in go https://github.com/at15/go-solr",
 	Run: func(cmd *cobra.Command, args []string) {

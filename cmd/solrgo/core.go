@@ -37,6 +37,10 @@ var CoreCreateCmd = &cobra.Command{
 		name := args[0]
 		core := solr.NewCore(name)
 		core.ConfigSet = configSet
+		if core.ConfigSet == solr.DefaultConfigSet {
+			log.Warnf("using default config set %s, if you have more than one core with different schema, "+
+				"you should copy the schema before using it", solr.DefaultConfigSet)
+		}
 		exists, err := solrClient.CreateCoreIfNotExists(context.Background(), core)
 		if err != nil {
 			log.Fatalf("Create core %s failed %v", name, err)
