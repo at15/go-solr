@@ -1,6 +1,9 @@
 package main
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/cobra"
+	"github.com/at15/go-solr/solr"
+)
 
 var CreateCmd = &cobra.Command{
 	Use:   "create",
@@ -26,6 +29,9 @@ func init() {
 	//*coreCreateCmd = *CoreCreateCmd
 	// FIXME: it seems change the use does not works, we still see create in available commands
 	//coreCreateCmd.Use = "core"
+	// FIXME: we are copying from CoreCreateCmd due to we can't just change the use ...
+	CreateCoreCmd.Flags().StringVar(&configSet, "configSet", solr.DefaultConfigSet,
+		"specify configSet for the core, it must already exists, you should NOT use the default value if you have more than one cores with different schema")
 
 	CreateCmd.AddCommand(CreateCoreCmd)
 }

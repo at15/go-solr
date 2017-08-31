@@ -18,6 +18,9 @@ test-in-docker:
 	./script/wait-for-it.sh solr:8983
 	make install
 	solrgo core create demo
+	solrgo core create film --configSet film
+	solrgo core create job --configSet job
+	cd example/film; solrgo core index film films.json
 # go test -v -cover ./pkg/...
 # cd example/job; go run main.go
 docker-test:

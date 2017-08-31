@@ -6,6 +6,7 @@ import (
 	"github.com/at15/go-solr/solr"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 var (
@@ -70,10 +71,41 @@ var CoreDeleteCmd = &cobra.Command{
 	},
 }
 
+var CoreIndexCmd = &cobra.Command{
+	Use:   "index",
+	Short: "Index JSON document",
+	Long:  "Index JSON file to specified core",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("must provide core name and file path")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		coreName := args[0]
+		fileName := args[1]
+		core := solrClient.GetCore(coreName)
+		if _, err := core.Ping(context.Background()); err != nil {
+			log.Fatalf("ping core %s failed %v", coreName, err)
+			return
+		}
+		f, err := os.Open(fileName)
+		if err != nil {
+			log.Fatalf("can't open file %s: %v", fileName, err)
+		}
+		if err := core.Update(context.Background(), f); err != nil {
+			log.Fatalf("can't index %s: %v", fileName, err)
+		}
+		// TODO: count indexed documents?
+		log.Info("index finished")
+	},
+}
+
 func init() {
 	CoreCreateCmd.Flags().StringVar(&configSet, "configSet", solr.DefaultConfigSet,
 		"specify configSet for the core, it must already exists, you should NOT use the default value if you have more than one cores with different schema")
 
 	CoreCmd.AddCommand(CoreCreateCmd)
+	CoreCmd.AddCommand(CoreIndexCmd)
 	CoreCmd.AddCommand(CoreDeleteCmd)
 }

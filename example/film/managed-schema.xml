@@ -122,6 +122,8 @@
     <field name="_version_" type="long" indexed="false" stored="false"/>
     <field name="_root_" type="string" indexed="true" stored="false" docValues="false" />
     <!--<field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>-->
+    <field name="name" type="text_general" multiValued="false" stored="true" />
+    <field name="initial_release_date" type="tdate" stored="true"/>
 
     <!-- Only enabled in the "schemaless" data-driven example (assuming the client
          does not know what fields may be searched) because it's very expensive to index everything twice. -->
