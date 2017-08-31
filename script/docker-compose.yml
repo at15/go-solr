@@ -1,7 +1,8 @@
 version: '2'
 services:
   solr:
-    image: solr:6.6.0
+    build:
+      context: ../example
     ports:
       - "8984:8983"
   golang:

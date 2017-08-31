@@ -13,18 +13,21 @@ install:
 	rm -f $(shell which solrgo)
 	go install  -ldflags "$(FLAGS)" ./cmd/solrgo
 test:
-	go test -v -cover ./pkg/...
+	go test -v -cover ./solr/...
 test-in-docker:
 	./script/wait-for-it.sh solr:8983
 	make install
 	solrgo core create demo
-	go test -v -cover ./pkg/...
-	cd example/job; go run main.go
+	solrgo core create film --configSet film
+	solrgo core create job --configSet job
+	cd example/film; solrgo core index film films.json
+	go test -v -cover ./solr/...
 docker-test:
+	cd script; docker-compose build
 	cd script; docker-compose run golang
 	cd script; docker-compose down
 fmt:
-	gofmt -d -l -w ./pkg
+	gofmt -d -l -w ./solr
 	gofmt -d -l -w ./cmd/solrgo
 	gofmt -d -l -w ./example/job
 loc:
